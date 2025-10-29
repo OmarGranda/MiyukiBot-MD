@@ -3,7 +3,7 @@ import ws from "ws"
 const handler = async (m, { conn, usedPrefix, participants, rcanal }) => {
   try {
     global.conns = global.conns || []
-    const MAX_SUBBOTS = 3
+    const MAX_SUBBOTS = 10
 
     const detectarPais = (numero) => {
       const codigos = {
@@ -136,11 +136,11 @@ const handler = async (m, { conn, usedPrefix, participants, rcanal }) => {
 ⏱ Uptime: ${mainUptime}
 
 ━━━━━━━━━━━━━━━━━━
-📊 *ESTADO DE CUPOS*
+📊 *CUPONES PARA SUBBOTS*
 ━━━━━━━━━━━━━━━━━━
-🔹 Cupos Activos: ${MAX_SUBBOTS}
-🔸 Cupos Usados: ${usados}
-⚪ Cupos Libres: ${libres}
+🟢 Activos: ${MAX_SUBBOTS}
+🔴 En uso: ${usados}
+⚪ Libres: ${libres}
 
 ━━━━━━━━━━━━━━━━━━
 🤖 *SUBBOTS CONECTADOS*
