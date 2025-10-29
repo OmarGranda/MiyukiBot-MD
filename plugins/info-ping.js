@@ -12,7 +12,7 @@ let handler = async (m, { conn }) => {
     let latensi = speed() - timestamp
 
     const start = new Date().getTime()
-    await conn.sendMessage(m.chat, { text: `*📡 Conectando a la base de datos del Host*
+    await conn.sendMessage(m.chat, { text: `*🚩 CALCULANDO PING...*
 > Por favor espere...` }, { quoted: m })
     const end = new Date().getTime()
     const latency = end - start
@@ -26,7 +26,7 @@ let handler = async (m, { conn }) => {
     const usedRAM = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)
     const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm A')
 
-    const thumbBuffer = Buffer.from(await (await fetch('https://i.postimg.cc/prym5tmP/IMG-20251026-WA0001.jpg')).arrayBuffer())
+    const thumbBuffer = Buffer.from(await (await fetch('https://postimg.cc/GTcV2x8v')).arrayBuffer())
 
     exec(`neofetch --stdout`, async (error, stdout) => {
       let sysInfo = stdout.toString("utf-8").replace(/Memory:/, "Ram:")
@@ -49,7 +49,7 @@ let handler = async (m, { conn }) => {
         contextInfo: {
           externalAdReply: {
             title: '𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿',
-            body: 'Infinity Ultra Host',
+            body: 'X-Host',
             thumbnail: thumbBuffer,
             sourceUrl: redes,
             mediaType: 1,
