@@ -145,14 +145,7 @@ const handler = async (m, { conn, usedPrefix, participants, rcanal }) => {
 ━━━━━━━━━━━━━━━━━━
 🤖 *SUBBOTS CONECTADOS*
 ━━━━━━━━━━━━━━━━━━
-${subBots.length > 0 ? subBots.join("\n") : "✧ No hay SubBots conectados actualmente."}
-
-━━━━━━━━━━━━━━━━━━
-💬 *BOTS EN ESTE GRUPO*
-━━━━━━━━━━━━━━━━━━
-${groupBotsText}
-
-`
+${subBots.length > 0 ? subBots.join("\n") : "✧ No hay SubBots conectados actualmente."}`
 
         const mentionList = groupBots.map(bot => (bot.endsWith("@s.whatsapp.net") ? bot : `${bot}@s.whatsapp.net`))
 
