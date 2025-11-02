@@ -6,7 +6,7 @@ import fetch from 'node-fetch'
 
 const REG_NAME_AGE = /\|?(.*)([.|] *?)([0-9]*)$/i
 
-// Handler principal
+
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   const who = m.mentionedJid?.[0] || (m.fromMe ? conn.user.jid : m.sender)
