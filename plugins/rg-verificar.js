@@ -4,7 +4,6 @@ import PhoneNumber from 'awesome-phonenumber'
 import { createHash } from 'crypto'
 import fetch from 'node-fetch'
 
-// Expresión regular para extraer nombre y edad del texto ingresado
 const REG_NAME_AGE = /\|?(.*)([.|] *?)([0-9]*)$/i
 
 // Handler principal
