@@ -114,24 +114,26 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
   let sn = createHash('md5').update(m.sender).digest('hex').slice(0, 20)
   
 
-  let regbot = `≡══════════════════≡
-彡 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 • 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐎 彡
+  let regbotHacker = `≡══════════════════≡
+彡 🌸 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 ⭐ 彡
 ≡══════════════════≡
 
 ╭━━━━━ ˚₊· ͟͟͞͞➳❥
-│ *🍓ɴᴏᴍʙʀᴇ:* ${name}
-│ *💫 ᴜsᴇʀ:*  ${name2}
-│ *📱ɴᴜᴍᴇʀᴏ:* ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
-│ *🐰ᴇᴅᴀᴅ:* ${age} años
-│ *🕸️ ʙɪᴏ:* ${bio}
+│ *👾 NICKNAME:* ${name2.toUpperCase()}
+│ *🛡️ USER ID:* ${name}
+│ *📡 CONTACT:* ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
+│ *🧬 AGE:* ${age} años
+│ *⚡ BIO:* ${bio || 'Sin datos'}
 ├────────────
-│ *📖 ғᴇᴄʜᴀ:* ${fecha}
-│ *⌛ ʜᴏʀᴀ:* ${hora}
-│ *🌙 ᴅɪᴀ:* ${dia}
+│ *🗓️ DATE:* ${fecha}
+│ *⏱️ TIME:* ${hora}
+│ *🌐 DAY:* ${dia}
 ╰━━━━━ ˚₊· ͟͟͞͞➳❥
 
-🤗 *¡Bienvenido ${name}!*
-Tu registro ha sido completado exitosamente ✅`
+💻 *Acceso concedido, ${name2}*  
+🔓 Tus credenciales han sido encriptadas y registradas en el sistema.  
+👽 Bienvenido al mundo digital, onichan... xd
+`
 
   await m.react?.('📩')
 
