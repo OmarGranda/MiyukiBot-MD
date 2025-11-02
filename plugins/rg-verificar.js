@@ -146,7 +146,7 @@ Ejemplo: ${usedPrefix + command} ${displayName}.18
         thumbnailUrl: 'https://qu.ax/NtBCa.jpg',
         mediaUrl: redes,
         sourceUrl: redes,
-        renderLargerThumbnail: true
+        renderLargerThumbnail: false
       }
     }
   }, { quoted: fkontak })
