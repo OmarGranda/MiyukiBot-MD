@@ -110,22 +110,26 @@ Ejemplo: ${usedPrefix + command} ${displayName}.18
   const regMessage = `≡══════════════════≡
  彡 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 • 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐎 彡
 ≡══════════════════≡
+╔══════════════════════════════════╗
+║ 🔰 ACCESO AL SISTEMA AUTORIZADO 🔰 ║
+╚══════════════════════════════════╝
 
-╭━━━━━ ˚₊· ͟͟͞͞➳❥
-│ *🍓ɴᴏᴍʙʀᴇ:* ${name}
-│ *💫 ᴜsᴇʀ:*  ${name2}
-│ *📱ɴᴜᴍᴇʀᴏ:* ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
-│ *🐰ᴇᴅᴀᴅ:* ${age} años
-│ *🕸️ ʙɪᴏ:* ${bio}
-├────────────
-│ *📖 ғᴇᴄʜᴀ:* ${fecha}
-│ *⌛ ʜᴏʀᴀ:* ${hora}
-│ *🌙 ᴅɪᴀ:* ${dia}
-╰━━━━━ ˚₊· ͟͟͞͞➳❥
+👾 NICK: ${displayName.toUpperCase()}
+🆔 ID: ${name}
+📞 LINK: ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
+🎯 EDAD: ${age} años
+💠 BIO: ${bio}
 
-💻 Acceso concedido, ${displayName}  
-🔓 Tus credenciales han sido registradas de manera segura.  
-👽 Bienvenido al mundo digital, onichan... xd`
+📆 FECHA: ${fecha}
+🕐 HORA: ${hora}
+🌌 DÍA: ${dia}
+
+─────────────────────────────
+✅ Conexión establecida...
+💾 Datos cifrados correctamente.
+⚡ Bienvenido al núcleo, ${displayName}.
+🧠 Sistema operativo: ONICHAN v2.5
+─────────────────────────────`
 
   await m.react?.('📩')
 
