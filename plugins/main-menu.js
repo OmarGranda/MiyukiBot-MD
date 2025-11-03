@@ -346,7 +346,7 @@ let handler = async (m, { conn }) => {
 ╰───────────────────────╯
 👑 © Powered By *OmarGranda*`
 
-    await conn.sendMessage(m.chat, {
+/*    await conn.sendMessage(m.chat, {
       video: { url: 'https://qu.ax/AjjHr.mp4' },
       caption: menu,
       contextInfo: {
@@ -368,7 +368,35 @@ let handler = async (m, { conn }) => {
           renderLargerThumbnail: true
         }
       }
-    }, { quoted: m })
+    }, { quoted: m })*/
+
+await conn.sendMessage(
+  m.chat,
+  {
+    video: { url: 'https://qu.ax/AjjHr.mp4' },
+    caption: menu,
+    gifPlayback: true,
+    gifAttribution: 0,
+    contextInfo: {
+      mentionedJid: [m.sender],
+      isForwarded: true,
+      forwardingScore: 999,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: channelRD.id,
+        serverMessageId: 100,
+        newsletterName: channelRD.name
+      },
+      externalAdReply: {
+        title: botname,
+        body: dev,
+        thumbnailUrl: randomIcono,
+        mediaType: 1,
+        renderLargerThumbnail: false
+      }
+    }
+  },
+  { quoted: m }
+)
 
   } catch (e) {
     console.error(e)
