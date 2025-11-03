@@ -110,26 +110,24 @@ Ejemplo: ${usedPrefix + command} ${displayName}.18
   const regMessage = `≡══════════════════≡
  彡 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 • 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐎 彡
 ≡══════════════════≡
-╔══════════════════════════════════╗
-║ 🔰 ACCESO AL SISTEMA AUTORIZADO 🔰 ║
-╚══════════════════════════════════╝
 
-👾 NICK: ${displayName.toUpperCase()}
-🆔 ID: ${name}
-📞 LINK: ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
-🎯 EDAD: ${age} años
-💠 BIO: ${bio}
+🔰 ACCESO AL SISTEMA AUTORIZADO 🔰
 
-📆 FECHA: ${fecha}
-🕐 HORA: ${hora}
-🌌 DÍA: ${dia}
-
-─────────────────────────────
+👾 *NICK:* ${displayName.toUpperCase()}
+🆔 *ID:* ${name}
+📞 *NÚMERO:* ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
+🎯 *EDAD:* ${age} años
+💠 *BIO:* ${bio}
+──────────────────────────
+📆 *FECHA:* ${fecha}
+🕐 *HORA:* ${hora}
+🌌 *DÍA:* ${dia}
+──────────────────────────
 ✅ Conexión establecida...
 💾 Datos cifrados correctamente.
 ⚡ Bienvenido al núcleo, ${displayName}.
-🧠 Sistema operativo: ONICHAN v2.5
-─────────────────────────────`
+🧠 *Sistema operativo:* MiyukiBot-MD v2.5
+──────────────────────────`
 
   await m.react?.('📩')
 
