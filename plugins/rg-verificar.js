@@ -108,23 +108,23 @@ Ejemplo: ${usedPrefix + command} ${displayName}.18
   const dia = now.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
 
   const regMessage = `≡══════════════════≡
-彡 🌸 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 ⭐ 彡
+ 彡 𝐑𝐄𝐆𝐈𝐒𝐓𝐑𝐎 • 𝐂𝐎𝐌𝐏𝐋𝐄𝐓𝐎 彡
 ≡══════════════════≡
 
-👾 NICKNAME: ${displayName.toUpperCase()}
-🛡️ USER ID: ${name}
-📡 CONTACT: ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
-🧬 AGE: ${age} años
-⚡ BIO: ${bio}
+╭━━━━━ ˚₊· ͟͟͞͞➳❥
+│ *🍓ɴᴏᴍʙʀᴇ:* ${name}
+│ *💫 ᴜsᴇʀ:*  ${name2}
+│ *📱ɴᴜᴍᴇʀᴏ:* ${PhoneNumber('+' + who.replace('@s.whatsapp.net', '')).getNumber('international')}
+│ *🐰ᴇᴅᴀᴅ:* ${age} años
+│ *🕸️ ʙɪᴏ:* ${bio}
+├────────────
+│ *📖 ғᴇᴄʜᴀ:* ${fecha}
+│ *⌛ ʜᴏʀᴀ:* ${hora}
+│ *🌙 ᴅɪᴀ:* ${dia}
+╰━━━━━ ˚₊· ͟͟͞͞➳❥
 
-🗓️ DATE: ${fecha}
-⏱️ TIME: ${hora}
-🌐 DAY: ${dia}
-
-💻 Acceso concedido, ${displayName}  
-🔓 Tus credenciales han sido registradas de manera segura.  
-👽 Bienvenido al mundo digital, onichan... xd
-`
+🤗 *¡Bienvenido ${name}!*
+Tu registro ha sido completado exitosamente ✅`
 
   await m.react?.('📩')
 
