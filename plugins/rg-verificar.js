@@ -123,8 +123,9 @@ Ejemplo: ${usedPrefix + command} ${displayName}.18
 │ *🌙 ᴅɪᴀ:* ${dia}
 ╰━━━━━ ˚₊· ͟͟͞͞➳❥
 
-🤗 *¡Bienvenido ${name}!*
-Tu registro ha sido completado exitosamente ✅`
+💻 Acceso concedido, ${displayName}  
+🔓 Tus credenciales han sido registradas de manera segura.  
+👽 Bienvenido al mundo digital, onichan... xd`
 
   await m.react?.('📩')
 
