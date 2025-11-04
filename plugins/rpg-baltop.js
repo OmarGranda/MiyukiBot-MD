@@ -77,7 +77,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
   text += `║ 🪙 Moneda: *${currencySymbol}*\n`
   text += `║ 👥 Usuarios: *${users.length}*\n`
   text += `║ 📄 Página: *${page}* / *${totalPages}*\n`
-  text += `╠═════════════════════════\n`
+  text += `╠════════════════════════\n`
 
   // Rellenar con cada usuario de la página
   for (let i = 0; i < slice.length; i++) {
