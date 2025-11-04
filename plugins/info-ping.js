@@ -52,7 +52,7 @@ let handler = async (m, { conn }) => {
       let sysInfo = stdout ? stdout.toString("utf-8").replace(/Memory:/, "Ram:") : ''
 
       let response = 
-`╭───〔 ⚙️ *PANEL DE ESTADO DEL BOT* ⚙️ 〕
+`╭───〔 ⚙️ *RESUMEN DE RENDIMIENTO* 〕
 │ 📶 *Ping:* ${latency} ms
 │ ⚡ *Velocidad de Respuesta:* ${latensi.toFixed(2)} ms
 │ 💽 *RAM usada:* ${usedRAM.toFixed(2)} MB / ${totalRAM.toFixed(0)} MB
@@ -66,7 +66,7 @@ let handler = async (m, { conn }) => {
 │ 🌎 *Zona horaria:* Lima 🇵🇪
 ╰───────────────────────❖
 
-╭───〔 💫 *INFORMACIÓN DEL BOT* 💫 〕
+╭───〔 💫 *INFORMACIÓN DEL BOT* 〕
 │ 🤖 *Nombre:* MiyukiBot-MD
 │ 🧩 *Versión:* 2.5.0 Beta
 │ 🧠 *Framework:* Node.js + Baileys
@@ -77,11 +77,11 @@ let handler = async (m, { conn }) => {
 │ 🧰 *Desarrollador:* Omar Granda
 │ 🌸 *Colaboradores:* Comunidad X-Host Devs
 │ 📦 *Repositorio:* github.com/OmarGranda/MiyukiBot-MD
-│ 💬 *Soporte:* Telegram / WhatsApp / Discord
+│ 💬 *Soporte:* Telegram / WhatsApp
 │ 💠 *Infraestructura:* VPS Linux - Cloud 24/7 ☁️
 ╰───────────────────────❖
 
-╭───〔 📊 *ESTADÍSTICAS DEL SISTEMA* 📊 〕
+╭───〔 📊 *RESUMEN DEL HOST* 〕
 │ 🔹 *PID del proceso:* ${process.pid}
 │ 🔹 *Memoria libre:* ${freeRAM.toFixed(2)} MB
 │ 🔹 *CPU lógico:* ${cpuCores}
