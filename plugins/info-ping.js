@@ -59,7 +59,6 @@ let handler = async (m, { conn }) => {
 │ 🧠 *CPU:* ${cpuModel} (${cpuCores} núcleos / ${cpuSpeed} MHz)
 │ 🏗️ *Arquitectura:* ${architecture.toUpperCase()}
 │ 💻 *Plataforma:* ${platform.toUpperCase()}
-│ 👤 *Usuario activo:* ${user}
 │ 🖥️ *Hostname:* ${hostname}
 │ ⏱️ *Uptime:* ${uptimeFormatted}
 │ 🗓️ *Fecha y hora:* ${fechaHora}
@@ -88,8 +87,7 @@ let handler = async (m, { conn }) => {
 │ 🔹 *Versión Node.js:* ${process.version}
 ╰───────────────────────❖
 
-🌸 *MiyukiBot-MD* — Tecnología Peruana 🇵🇪
-⚡ *Creado con amor por:* OmarGranda ❤️
+⚡ *CREADO POR:* OmarGranda ❤️
 🪄 *“El mejor bot es el que nunca se cae.”*
 ━━━━━━━━━━━━━━━━━━━━━━━`
 
