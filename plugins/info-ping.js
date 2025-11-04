@@ -13,8 +13,7 @@ let handler = async (m, { conn }) => {
     let latensi = speed() - timestamp
 
     const start = new Date().getTime()
-    await conn.sendMessage(m.chat, { text: `*🚩 CALCULANDO PING...*
-> Espere un momento ⏳` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `*🚩 CALCULANDO PING...*\n> Espere un momento ⏳` }, { quoted: m })
     const end = new Date().getTime()
     const latency = end - start
 
@@ -34,16 +33,23 @@ let handler = async (m, { conn }) => {
     const cpuSpeed = os.cpus()[0].speed
     const platform = os.platform()
     const architecture = os.arch()
+    const hostname = os.hostname()
+
+    let user = "Desconocido"
+    try {
+      user = os.userInfo().username
+    } catch (e) {}
 
     const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm:ss A')
-    const hostname = os.hostname()
-    const network = os.networkInterfaces()
-    const user = os.userInfo().username
 
-    const thumbBuffer = Buffer.from(await (await fetch('https://i.postimg.cc/RhBzW7B9/X-Host.jpg')).arrayBuffer())
+    // Cargar imagen miniatura
+    const imgRes = await fetch('https://i.postimg.cc/RhBzW7B9/X-Host.jpg')
+    const arrayBuffer = await imgRes.arrayBuffer()
+    const thumbBuffer = Buffer.from(arrayBuffer)
 
     exec(`neofetch --stdout`, async (error, stdout) => {
-      let sysInfo = stdout.toString("utf-8").replace(/Memory:/, "Ram:")
+      if (error) console.warn('⚠️ Neofetch no está instalado o no se puede ejecutar.')
+      let sysInfo = stdout ? stdout.toString("utf-8").replace(/Memory:/, "Ram:") : ''
 
       let response = 
 `╭───〔 ⚙️ *PANEL DE ESTADO DEL BOT* ⚙️ 〕
@@ -76,10 +82,10 @@ let handler = async (m, { conn }) => {
 ╰───────────────────────❖
 
 ╭───〔 📊 *ESTADÍSTICAS DEL SISTEMA* 📊 〕
-│ 🔹 *Procesos activos:* ${process.pid}
+│ 🔹 *PID del proceso:* ${process.pid}
 │ 🔹 *Memoria libre:* ${freeRAM.toFixed(2)} MB
 │ 🔹 *CPU lógico:* ${cpuCores}
-│ 🔹 *Cargas del sistema:* ${os.loadavg().map(n => n.toFixed(2)).join(' / ')}
+│ 🔹 *Carga del sistema:* ${os.loadavg().map(n => n.toFixed(2)).join(' / ')}
 │ 🔹 *Directorio actual:* ${process.cwd()}
 │ 🔹 *Versión Node.js:* ${process.version}
 ╰───────────────────────❖
