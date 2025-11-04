@@ -90,7 +90,7 @@ let handler = async (m, { conn }) => {
 │ 🔹 *Versión Node.js:* ${process.version}
 ╰───────────────────────❖
 
-🌸 *MiyukiBot-MD* — Tecnología japonesa, precisión peruana 🇵🇪
+🌸 *MiyukiBot-MD* — Tecnología Peruana 🇵🇪
 ⚡ *Creado con amor por:* OmarGranda ❤️
 🪄 *“El mejor bot es el que nunca se cae.”*
 ━━━━━━━━━━━━━━━━━━━━━━━`
