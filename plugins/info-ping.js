@@ -96,7 +96,7 @@ let handler = async (m, { conn }) => {
         mentions: [m.sender],
         contextInfo: {
           externalAdReply: {
-            title: '🌸 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿',
+            title: '𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 🌸',
             body: '⚙️ Estado del Servidor y Sistema',
             thumbnail: thumbBuffer,
             sourceUrl: 'https://github.com/OmarGranda/MiyukiBot-MD',
