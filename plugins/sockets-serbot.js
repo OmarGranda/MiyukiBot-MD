@@ -123,7 +123,7 @@ return
 if (qr && mcode) {
 let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("-")
-txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
+txtCode = await conn.sendMessage(m.chat, {text : rtx2, ...fake}, { quoted: m })
 codeBot = await m.reply(secret)
 console.log(secret)
 }
