@@ -43,7 +43,7 @@ let handler = async (m, { conn }) => {
     const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm:ss A')
 
     // Cargar imagen miniatura
-    const imgRes = await fetch('https://i.postimg.cc/9Q2tzBKt/IMG-20251104-090352.png')
+    const imgRes = await fetch('https://i.postimg.cc/zXY0wY3v/Miyuki-Bot-MD.png')
     const arrayBuffer = await imgRes.arrayBuffer()
     const thumbBuffer = Buffer.from(arrayBuffer)
 
