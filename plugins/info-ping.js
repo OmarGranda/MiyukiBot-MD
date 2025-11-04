@@ -1,6 +1,7 @@
 import speed from 'performance-now'
 import { exec } from 'child_process'
 import moment from 'moment-timezone'
+import os from 'os'
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
@@ -11,46 +12,88 @@ let handler = async (m, { conn }) => {
     let latensi = speed() - timestamp
 
     const start = new Date().getTime()
-    await conn.sendMessage(m.chat, { text: `*🚩 CALCULANDO PING...*
-> Por favor espere un momento ⏳` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `*🛰️ CALCULANDO PING...*\n> Espere un momento ⏳` }, { quoted: m })
     const end = new Date().getTime()
     const latency = end - start
 
+    // Datos del sistema
     const uptime = process.uptime()
     const hours = Math.floor(uptime / 3600)
     const minutes = Math.floor((uptime % 3600) / 60)
     const secondsUp = Math.floor(uptime % 60)
     const uptimeFormatted = `${hours}h ${minutes}m ${secondsUp}s`
 
-    const usedRAM = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)
-    const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm A')
+    const totalRAM = os.totalmem() / 1024 / 1024
+    const usedRAM = process.memoryUsage().heapUsed / 1024 / 1024
+    const freeRAM = totalRAM - usedRAM
+
+    const cpuModel = os.cpus()[0].model
+    const cpuCores = os.cpus().length
+    const cpuSpeed = os.cpus()[0].speed
+    const platform = os.platform()
+    const architecture = os.arch()
+    const hostname = os.hostname()
+    const user = os.userInfo().username
+    const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm:ss A')
+
+    // Cálculo CPU promedio
+    const cpuLoad = os.loadavg()[0] / cpuCores * 100
+    const cpuUsage = Math.min(cpuLoad, 100)
+
+    // Barras visuales
+    const makeBar = (value, max = 100, size = 10) => {
+      const filled = Math.round((value / max) * size)
+      const empty = size - filled
+      return '▰'.repeat(filled) + '▱'.repeat(empty)
+    }
+
+    const ramBar = makeBar((usedRAM / totalRAM) * 100)
+    const cpuBar = makeBar(cpuUsage)
 
     const thumbBuffer = Buffer.from(await (await fetch('https://i.postimg.cc/RhBzW7B9/X-Host.jpg')).arrayBuffer())
 
-    exec(`neofetch --stdout`, async (error, stdout) => {
-      let sysInfo = stdout.toString("utf-8").replace(/Memory:/, "Ram:")
-
+    exec(`neofetch --stdout`, async () => {
       let response = 
-`╭───〔 ⚙️ *Estado del Servidor* ⚙️ 〕
-│ 📡 *Ping:* ${latency} ms
-│ ⚡ *Velocidad de Respuesta:* ${latency.toFixed(2)} ms
-│ 💾 *Memoria usada:* ${usedRAM} MB
-│ ⏱️ *Uptime del Bot:* ${uptimeFormatted}
-│ 🗓️ *Fecha actual:* ${fechaHora}
-│ 🌍 *Zona Horaria:* Lima 🇵🇪
-│ 🧠 *Sistema:* Linux / Node.js
-│ 🔋 *Eficiencia:* ${(100 - (usedRAM / 512 * 100)).toFixed(1)}%
+`╭───〔 ⚙️ *PANEL DE RENDIMIENTO* ⚙️ 〕
+│ 📶 *Ping:* ${latency} ms
+│ ⚡ *Velocidad:* ${latensi.toFixed(2)} ms
+│ 🗓️ *Fecha:* ${fechaHora}
+│ 🌎 *Zona Horaria:* Lima 🇵🇪
 ╰───────────────────────❖
 
-*💫 Estado:* En línea y operativo ✅
-*📡 Latencia:* ${latensi.toFixed(4)} ms
-*💻 Plataforma:* 24/7 Cloud Hosting ☁️
-*🧩 Módulos activos:* Info, Utilidades, Administración
+╭───〔 💻 *ESTADO DEL SISTEMA* 💻 〕
+│ 💽 *RAM usada:* ${usedRAM.toFixed(2)} / ${totalRAM.toFixed(0)} MB
+│ 🧠 *Uso CPU:* ${cpuUsage.toFixed(2)}%
+│ 
+│ 💾 RAM: ${ramBar}
+│ 🔋 CPU: ${cpuBar}
+│ 
+│ 🧩 *CPU:* ${cpuModel}
+│ ⚙️ *Cores:* ${cpuCores}
+│ 🏗️ *Velocidad:* ${cpuSpeed} MHz
+│ 💻 *Plataforma:* ${platform.toUpperCase()}
+│ 🧱 *Arquitectura:* ${architecture.toUpperCase()}
+│ 🖥️ *Hostname:* ${hostname}
+│ 👤 *Usuario:* ${user}
+│ ⏱️ *Uptime:* ${uptimeFormatted}
+╰───────────────────────❖
 
+╭───〔 🤖 *INFORMACIÓN DEL BOT* 🤖 〕
+│ 🌸 *Nombre:* MiyukiBot-MD
+│ 🪄 *Versión:* 2.5.0 Beta
+│ 💬 *Lenguaje:* JavaScript (Node.js)
+│ 🧠 *Framework:* Baileys MultiDevice
+│ 📡 *Estado:* Online ✅
+│ 🧰 *Desarrollador:* Omar Granda
+│ 🧩 *Módulos activos:* Info, Tools, Admin, Diversión
+│ ☁️ *Infraestructura:* VPS Linux - 24/7
+│ 🔗 *Repositorio:* github.com/OmarGranda/MiyukiBot-MD
+│ 🌐 *Soporte:* Telegram / WhatsApp / Discord
+╰───────────────────────❖
+
+🪶 *Frase del Día:* “El mejor bot no es el más rápido, sino el que nunca se detiene.” 💫
 ━━━━━━━━━━━━━━━━━━━━━━━
-🌸 *MiyukiBot-MD* by OmarGranda  
-📍 *Repositorio:* github.com/OmarGranda  
-🔧 *Versión:* 2.5.0 Beta
+🌸 *MiyukiBot-MD* — Tecnología japonesa, precisión peruana 🇵🇪
 ━━━━━━━━━━━━━━━━━━━━━━━`
 
       await conn.sendMessage(m.chat, {
@@ -59,7 +102,7 @@ let handler = async (m, { conn }) => {
         contextInfo: {
           externalAdReply: {
             title: '🌸 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿',
-            body: '⚡ Sistema Operativo Estable',
+            body: '⚙️ Dashboard del Sistema y Estado',
             thumbnail: thumbBuffer,
             sourceUrl: 'https://github.com/OmarGranda/MiyukiBot-MD',
             mediaType: 1,
@@ -76,9 +119,9 @@ let handler = async (m, { conn }) => {
   }
 }
 
-handler.help = ['ping', 'p']
+handler.help = ['ping', 'status', 'estado', 'p']
 handler.tags = ['info']
-handler.command = ['ping', 'p']
+handler.command = ['ping', 'status', 'estado', 'p']
 handler.register = true
 
 export default handler
