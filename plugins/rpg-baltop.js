@@ -68,7 +68,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
 
   // Imagen por defecto si no hay ninguna
   if (!imageUrl) {
-    imageUrl = 'https://telegra.ph/file/63b0bdf2a10c21462b5b1.jpg' // cámbiala si quieres otra
+    imageUrl = 'https://qu.ax/Wbsmr.jpg' // cámbiala si quieres otra
   }
 
   // Construir texto del leaderboard con emojis y formato claro
