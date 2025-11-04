@@ -87,7 +87,7 @@ let handler = async (m, { conn }) => {
 │ 🔹 *Versión Node.js:* ${process.version}
 ╰───────────────────────❖
 
-⚡ *CREADO POR:* OmarGranda ❤️
+⚡ *CREADO POR:* OmarGranda 👨‍💻
 🪄 *“El mejor bot es el que nunca se cae.”*
 ━━━━━━━━━━━━━━━━━━━━━━━`
 
