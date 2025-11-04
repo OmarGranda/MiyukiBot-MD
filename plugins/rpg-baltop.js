@@ -113,7 +113,7 @@ let handler = async (m, { conn, args, usedPrefix }) => {
   }
 
   text += `║ Usa *${usedPrefix}baltop [número]* para cambiar de página\n`
-  text += `╚═════════════════════════\n`
+  text += `╚════════════════════════\n`
 
   // Preparar menciones (para notificar a los usuarios listados)
   const mentions = slice.map(u => u.jid).filter(Boolean)
