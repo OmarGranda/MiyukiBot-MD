@@ -1,96 +1,58 @@
-import fs from 'fs'
-
-const filePath = './database/lids.json'
-
-// 🗂️ Cargar base de datos de LIDs (crear si no existe)
-function loadLids() {
+let handler = async (m, { conn, participants, groupMetadata }) => {
   try {
-    if (!fs.existsSync(filePath)) {
-      fs.mkdirSync('./database', { recursive: true })
-      fs.writeFileSync(filePath, '{}')
-    }
-    return JSON.parse(fs.readFileSync(filePath))
-  } catch (err) {
-    console.error('Error cargando lids.json:', err)
-    return {}
-  }
-}
-
-// 💾 Guardar base de datos actualizada
-function saveLids(db) {
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(db, null, 2))
-  } catch (err) {
-    console.error('Error guardando lids.json:', err)
-  }
-}
-
-// 🔑 Generar LID único
-function generateLid() {
-  return 'LID-' + Math.floor(100000 + Math.random() * 900000) // 6 dígitos aleatorios
-}
-
-// ⚙️ Handler principal
-let handler = async (m, { conn, groupMetadata }) => {
-  try {
-    await m.react('🕒')
-
+    await m.react('🕒') // Reacción inicial
+    
+    // Verifica que el comando se use en un grupo
     if (!m.isGroup) {
       await m.reply('⚠️ Este comando solo puede usarse en grupos.')
       return
     }
 
     const group = groupMetadata || (await conn.groupMetadata(m.chat))
-    const participants = group.participants || []
+    const participantList = group.participants || []
 
-    // Obtener usuario mencionado, citado o remitente
-    const targetJid =
-      (m.mentionedJid && m.mentionedJid[0]) ||
+    // Obtener usuario mencionado, citado o el mismo remitente
+    const mentionedJid = 
+      (m.mentionedJid && m.mentionedJid[0]) || 
       (m.quoted ? m.quoted.sender : m.sender)
+    
+    // Normalizar los IDs (asegura que coincidan)
+    const normalize = jid => jid?.replace(/[^0-9]/g, '') // solo números
+    const user = participantList.find(p => normalize(p.id) === normalize(mentionedJid))
 
-    // Verificar si el usuario está en el grupo
-    const userExists = participants.some(p => p.id === targetJid)
-    if (!userExists) {
+    if (!user) {
       await conn.sendMessage(m.chat, {
-        text: `⚠️ *No se encontró el usuario en el grupo.*\nVerifica que estés mencionando correctamente.`,
+        text: `⚠️ *No se encontró el usuario en el grupo.*\n\nVerifica que estés mencionando correctamente o que el usuario aún esté en el grupo.`,
       }, { quoted: m })
       await m.react('✖️')
       return
     }
 
-    // Cargar DB de LIDs
-    const lidsDB = loadLids()
+    // Simulamos un LID (puedes reemplazarlo con tu propio sistema)
+    const lid = user.lid || `LID-${Math.floor(Math.random() * 100000)}`
+    const displayName = (await conn.getName(mentionedJid)) || mentionedJid.split('@')[0]
 
-    // Si el usuario no tiene LID, generar uno nuevo
-    if (!lidsDB[targetJid]) {
-      lidsDB[targetJid] = generateLid()
-      saveLids(lidsDB)
-    }
-
-    const lid = lidsDB[targetJid]
-    const name = (await conn.getName(targetJid)) || targetJid.split('@')[0]
-
-    // 📜 Mensaje con diseño
+    // Mensaje bonito
     const msg = `
 ╭───❀ *LID DEL USUARIO* ❀───╮
-│ 👤 *Usuario:* @${targetJid.split('@')[0]}
-│ 🏷️ *Nombre:* ${name}
+│ 👤 *Usuario:* @${mentionedJid.split('@')[0]}
+│ 🏷️ *Nombre:* ${displayName}
 │ 🆔 *LID:* ${lid}
 │ 🕓 *Consultado:* ${new Date().toLocaleString('es-ES')}
 ╰──────────────────────────╯
 `.trim()
 
-    await conn.sendMessage(m.chat, {
-      text: msg,
-      mentions: [targetJid]
+    await conn.sendMessage(m.chat, { 
+      text: msg, 
+      mentions: [mentionedJid] 
     }, { quoted: m })
 
     await m.react('✅')
 
   } catch (error) {
     console.error(error)
-    await conn.sendMessage(m.chat, {
-      text: `❌ *Error inesperado:*\n${error.message}`
+    await conn.sendMessage(m.chat, { 
+      text: `❌ *Error inesperado:*\n${error.message}` 
     }, { quoted: m })
     await m.react('✖️')
   }
