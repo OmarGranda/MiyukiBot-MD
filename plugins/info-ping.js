@@ -8,110 +8,94 @@ let handler = async (m, { conn }) => {
   try {
     await conn.sendMessage(m.chat, { react: { text: '🚀', key: m.key } })
 
-    // Medición de velocidad
     let timestamp = speed()
     let latensi = speed() - timestamp
-
     const start = new Date().getTime()
-    await conn.sendMessage(m.chat, { text: `*🚩 CALCULANDO PING...*\n> Espere un momento ⏳` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `⚙️ *Calculando ping...*\n> Por favor espere unos segundos ⏳` }, { quoted: m })
     const end = new Date().getTime()
     const latency = end - start
 
-    // Datos del sistema
+    // ─── Datos del sistema ───
     const uptime = process.uptime()
     const hours = Math.floor(uptime / 3600)
     const minutes = Math.floor((uptime % 3600) / 60)
-    const secondsUp = Math.floor(uptime % 60)
-    const uptimeFormatted = `${hours}h ${minutes}m ${secondsUp}s`
+    const seconds = Math.floor(uptime % 60)
+    const uptimeFormatted = `${hours}h ${minutes}m ${seconds}s`
 
     const totalRAM = os.totalmem() / 1024 / 1024
     const usedRAM = process.memoryUsage().heapUsed / 1024 / 1024
     const freeRAM = totalRAM - usedRAM
-
-    const cpuModel = os.cpus()[0].model
+    const cpu = os.cpus()[0]
+    const cpuModel = cpu.model
+    const cpuSpeed = cpu.speed
     const cpuCores = os.cpus().length
-    const cpuSpeed = os.cpus()[0].speed
-    const platform = os.platform()
-    const architecture = os.arch()
-    const hostname = os.hostname()
-
-    let user = "Desconocido"
-    try {
-      user = os.userInfo().username
-    } catch (e) {}
-
     const fechaHora = moment().tz('America/Lima').format('YYYY/MM/DD, h:mm:ss A')
+    const platform = os.platform().toUpperCase()
+    const architecture = os.arch().toUpperCase()
+    const hostname = os.hostname()
+    const user = os.userInfo().username || 'Desconocido'
 
-    // Cargar imagen miniatura
+    // Miniatura
     const imgRes = await fetch('https://i.postimg.cc/RhBzW7B9/X-Host.jpg')
-    const arrayBuffer = await imgRes.arrayBuffer()
-    const thumbBuffer = Buffer.from(arrayBuffer)
+    const thumbBuffer = Buffer.from(await imgRes.arrayBuffer())
 
-    exec(`neofetch --stdout`, async (error, stdout) => {
-      if (error) console.warn('⚠️ Neofetch no está instalado o no se puede ejecutar.')
-      let sysInfo = stdout ? stdout.toString("utf-8").replace(/Memory:/, "Ram:") : ''
-
-      let response = 
-`╭───〔 ⚙️ *PANEL DE ESTADO DEL BOT* ⚙️ 〕
-│ 📶 *Ping:* ${latency} ms
-│ ⚡ *Velocidad de Respuesta:* ${latensi.toFixed(2)} ms
-│ 💽 *RAM usada:* ${usedRAM.toFixed(2)} MB / ${totalRAM.toFixed(0)} MB
-│ 🧠 *CPU:* ${cpuModel} (${cpuCores} núcleos / ${cpuSpeed} MHz)
-│ 🏗️ *Arquitectura:* ${architecture.toUpperCase()}
-│ 💻 *Plataforma:* ${platform.toUpperCase()}
-│ 👤 *Usuario activo:* ${user}
-│ 🖥️ *Hostname:* ${hostname}
-│ ⏱️ *Uptime:* ${uptimeFormatted}
-│ 🗓️ *Fecha y hora:* ${fechaHora}
-│ 🌎 *Zona horaria:* Lima 🇵🇪
-╰───────────────────────❖
+    // ─── Texto del mensaje ───
+    let response = 
+`╭───〔 ⚙️ *ESTADO GENERAL DE MIYUKIBOT-MD* ⚙️ 〕
+├ 📡 *Ping:* ${latency} ms | ⚡ *Velocidad:* ${latensi.toFixed(2)} ms
+├ 💽 *RAM usada:* ${usedRAM.toFixed(2)} MB / ${totalRAM.toFixed(0)} MB
+├ 🔋 *Eficiencia:* ${(100 - (usedRAM / totalRAM * 100)).toFixed(1)}%
+├ 🧠 *CPU:* ${cpuModel} (${cpuCores} núcleos @${cpuSpeed}MHz)
+├ 🖥️ *Plataforma:* ${platform} ${architecture}
+├ 👤 *Usuario:* ${user}
+├ 🏠 *Hostname:* ${hostname}
+├ ⏱️ *Uptime:* ${uptimeFormatted}
+├ 🗓️ *Hora actual:* ${fechaHora}
+├ 🌍 *Zona horaria:* Lima 🇵🇪
+╰───────────────────────────────❖
 
 ╭───〔 💫 *INFORMACIÓN DEL BOT* 💫 〕
-│ 🤖 *Nombre:* MiyukiBot-MD
-│ 🧩 *Versión:* 2.5.0 Beta
-│ 🧠 *Framework:* Node.js + Baileys
-│ 🛰️ *Módulos activos:* Info, Tools, Admin, Diversión
-│ 📡 *Estado:* En línea y operativo ✅
-│ 🔋 *Eficiencia RAM:* ${(100 - (usedRAM / totalRAM * 100)).toFixed(1)}%
-│ 🪶 *Lenguaje:* JavaScript (ESM)
-│ 🧰 *Desarrollador:* Omar Granda
-│ 🌸 *Colaboradores:* Comunidad X-Host Devs
-│ 📦 *Repositorio:* github.com/OmarGranda/MiyukiBot-MD
-│ 💬 *Soporte:* Telegram / WhatsApp / Discord
-│ 💠 *Infraestructura:* VPS Linux - Cloud 24/7 ☁️
-╰───────────────────────❖
+├ 🤖 *Nombre:* MiyukiBot-MD
+├ 🧩 *Versión:* 2.5.0 Beta
+├ 📦 *Repositorio:* github.com/OmarGranda/MiyukiBot-MD
+├ 🧰 *Framework:* Node.js + Baileys
+├ 🌐 *Infraestructura:* VPS Linux - Cloud 24/7
+├ 🧠 *Módulos:* Info | Tools | Admin | Fun
+├ 🪶 *Lenguaje:* JavaScript (ESM)
+├ 👨‍💻 *Desarrollador:* Omar Granda
+├ 🌸 *Equipo:* Comunidad X-Host Devs
+├ 💬 *Soporte:* Telegram / WhatsApp / Discord
+╰───────────────────────────────❖
 
-╭───〔 📊 *ESTADÍSTICAS DEL SISTEMA* 📊 〕
-│ 🔹 *PID del proceso:* ${process.pid}
-│ 🔹 *Memoria libre:* ${freeRAM.toFixed(2)} MB
-│ 🔹 *CPU lógico:* ${cpuCores}
-│ 🔹 *Carga del sistema:* ${os.loadavg().map(n => n.toFixed(2)).join(' / ')}
-│ 🔹 *Directorio actual:* ${process.cwd()}
-│ 🔹 *Versión Node.js:* ${process.version}
-╰───────────────────────❖
+╭───〔 📊 *SISTEMA HOST* 📊 〕
+├ 🔹 *PID:* ${process.pid}
+├ 🔹 *Memoria libre:* ${freeRAM.toFixed(2)} MB
+├ 🔹 *Cargas del sistema:* ${os.loadavg().map(n => n.toFixed(2)).join(' / ')}
+├ 🔹 *Directorio actual:* ${process.cwd()}
+├ 🔹 *Node.js:* ${process.version}
+╰───────────────────────────────❖
 
-🌸 *MiyukiBot-MD* — Tecnología japonesa, precisión peruana 🇵🇪
-⚡ *Creado con amor por:* OmarGranda ❤️
-🪄 *“El mejor bot es el que nunca se cae.”*
+⚡ *Creado por:* OmarGranda ❤️
+🪄 *"El mejor bot es el que nunca se cae."*
 ━━━━━━━━━━━━━━━━━━━━━━━`
 
-      await conn.sendMessage(m.chat, {
-        text: response,
-        mentions: [m.sender],
-        contextInfo: {
-          externalAdReply: {
-            title: '🌸 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿',
-            body: '⚙️ Estado del Servidor y Sistema',
-            thumbnail: thumbBuffer,
-            sourceUrl: 'https://github.com/OmarGranda/MiyukiBot-MD',
-            mediaType: 1,
-            renderLargerThumbnail: true
-          }
+    await conn.sendMessage(m.chat, {
+      text: response,
+      mentions: [m.sender],
+      contextInfo: {
+        externalAdReply: {
+          title: '🌸 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿',
+          body: '⚙️ Estado del Servidor y Sistema',
+          thumbnail: thumbBuffer,
+          sourceUrl: 'https://github.com/OmarGranda/MiyukiBot-MD',
+          mediaType: 1,
+          renderLargerThumbnail: true
         }
-      }, { quoted: m })
+      }
+    }, { quoted: m })
 
-      await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
-    })
+    await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } })
+    
   } catch (error) {
     console.error(error)
     await conn.sendMessage(m.chat, { text: '❌ Ocurrió un error al calcular el ping.' }, { quoted: m })
