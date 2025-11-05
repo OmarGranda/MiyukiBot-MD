@@ -8,8 +8,8 @@ const correo = "omargranda673@gmail.com"
 const web = "https://github.com/OmarGranda"
 const about = "Desarrollador oficial de MiyukiBot MD 🧑‍💻"
 const direccion = "Perú 🇵🇪"
-const instagram = "https://instagram.com/"
-const canal = "https://whatsapp.com/channel/0029VaAoXNsKfvfZHv9cuG0G" // Cambia si tienes canal oficial
+const instagram = "https://www.instagram.com/omar_xyz7"
+const canal = "https://chat.whatsapp.com/L8QVdtncGCTB7FLoXdPeUP" // Cambia si tienes canal oficial
 
 const vcard = `
 BEGIN:VCARD
@@ -44,6 +44,7 @@ await conn.sendMessage(m.chat, {
 🌐 *GitHub:* ${web}
 📧 *Correo:* ${correo}
 🔗 *Canal:* ${canal}
+💌 *Instagram:* ${instagram} 
 
 > _Si quieres un bot igual o personalizado, puedes comunicarte con mi creador._
 `,
