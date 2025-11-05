@@ -1,15 +1,14 @@
-// by dv.shadow - https://github.com/Yuji-XDev
-
 import { proto } from '@whiskeysockets/baileys'
 import PhoneNumber from 'awesome-phonenumber'
 
 const name = "OmarGranda"
-const empresa = "𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿"
+const empresa = "𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 ⚡"
 const numCreador = "51927303598"
 const correo = "omargranda673@gmail.com"
 const web = "https://github.com/OmarGranda"
-const about = " Creador y desarrollodor del MiyukiBot 🧑‍💻 "
-const direccion = "Perú"
+const canal = "https://whatsapp.com/channel/0029VaAoXNsKfvfZHv9cuG0G"
+const about = "Desarrollador oficial de MiyukiBot MD 🧑‍💻"
+const direccion = "Perú 🇵🇪"
 
 const vcard = `
 BEGIN:VCARD
@@ -28,37 +27,55 @@ X-WA-BIZ-NAME:${name}
 X-WA-BIZ-DESCRIPTION:${about}
 END:VCARD`.trim()
 
-const contactMessage = {
-  displayName: name,
-  vcard
-}
+const contactMessage = { displayName: name, vcard }
 
 let handler = async (m, { conn }) => {
+
   await m.react("👑")
-  await conn.sendMessage(
-    m.chat,
-    {
-      contacts: {
-        displayName: name,
-        contacts: [contactMessage]
-      },
-      contextInfo: {
-        mentionedJid: [m.sender],
-        externalAdReply: {
-          title: "Contacto De Mi Creador 👑",
-          body: "",
-          mediaType: 1,
-          thumbnailUrl: 'https://qu.ax/KVDzy.jpg',
-          renderLargerThumbnail: true,
-          sourceUrl: web
+
+  let texto = `👑 *CREADOR OFICIAL DE MIYUKIBOT-MD* 👑
+
+*Nombre:* ${name}
+*Cargo:* CEO & Desarrollador Principal
+*Ubicación:* ${direccion}
+
+🌐 *GitHub:* ${web}
+📧 *Correo:* ${correo}
+🔗 *Canal Oficial:* ${canal}
+
+> _¿Quieres tu propio bot o una versión personalizada? Escríbeme._
+`
+
+  const botones = [
+    { index: 1, urlButton: { displayText: "💬 Contactar en WhatsApp", url: `https://wa.me/${numCreador}` }},
+    { index: 2, urlButton: { displayText: "📂 GitHub Oficial", url: web }},
+    { index: 3, urlButton: { displayText: "📢 Canal Oficial", url: canal }},
+  ]
+
+  await conn.sendMessage(m.chat, {
+    text: texto,
+    footer: "MiyukiBot-MD ⚡ By OmarGranda",
+    templateButtons: botones,
+    contextInfo: {
+      externalAdReply: {
+        title: "Contacto del Creador 👑",
+        body: empresa,
+        thumbnailUrl: 'https://qu.ax/KVDzy.jpg',
+        mediaType: 1,
+        renderLargerThumbnail: true,
+        sourceUrl: canal
       }
     }
-  },
-    { quoted: m }
-  )
+  }, { quoted: m })
+
+  // Enviar contacto
+  await conn.sendMessage(m.chat, {
+    contacts: { displayName: name, contacts: [contactMessage] }
+  }, { quoted: m })
+
 }
 
-handler.help = ["creador"]
+handler.help = ["creador", "owner", "creator"]
 handler.tags = ["info"]
 handler.command = ["creador", "creator", "owner"]
 
