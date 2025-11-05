@@ -6,10 +6,10 @@ const empresa = "𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 ⚡"
 const numCreador = "51927303598"
 const correo = "omargranda673@gmail.com"
 const web = "https://github.com/OmarGranda"
-const about = "Desarrollador oficial de MiyukiBot MD 🧑‍💻"
+const about = ""
 const direccion = "Perú 🇵🇪"
 const instagram = "https://www.instagram.com/omar_xyz7"
-const canal = "https://chat.whatsapp.com/L8QVdtncGCTB7FLoXdPeUP" // Cambia si tienes canal oficial
+const canal = "https://whatsapp.com/channel/0029Vb6wMPa8kyyTpjBG9C2H" // Cambia si tienes canal oficial
 
 const vcard = `
 BEGIN:VCARD
@@ -38,12 +38,17 @@ await conn.sendMessage(m.chat, {
   text: `👑 *CREADOR OFICIAL DE MIYUKIBOT-MD* 👑
 
 *Nombre:* ${name}
+
 *Rol:* CEO & Desarrollador Principal
+
 *País:* ${direccion}
 
 🌐 *GitHub:* ${web}
+
 📧 *Correo:* ${correo}
+
 🔗 *Canal:* ${canal}
+
 💌 *Instagram:* ${instagram} 
 
 > _Si quieres un bot igual o personalizado, puedes comunicarte con mi creador._
