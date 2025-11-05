@@ -54,7 +54,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     const currency = (typeof global?.currency === 'string' && global.currency) || '¥'
 
     // Texto estético
-    const texto = `🌸 *Perfil Financiero de ${name}* 🌸
+    const texto = `💲 *Perfil Financiero de ${name}*
 
 ╭─────────────❀
 │ 👤 *Usuario:* ${name}
@@ -71,7 +71,6 @@ let handler = async (m, { conn, usedPrefix }) => {
 ╰─────────────────
 
 🪙 *Consejo:* Usa *${usedPrefix}deposit* para proteger tu dinero.
-⚙️ *Comandos útiles:* *${usedPrefix}work*, *${usedPrefix}rob*, *${usedPrefix}daily*
 `
 
     // Evita fallos si rcanal no está definido (extra puede ser {})
@@ -81,7 +80,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     await conn.sendMessage(
       m.chat,
       {
-        image: { url: 'https://qu.ax/wnFsi.jpg' }, // reemplaza por la imagen que prefieras
+        image: { url: 'https://qu.ax/ksVMO.jpg' }, // reemplaza por la imagen que prefieras
         caption: texto,
         fileName: 'balance.jpg',
         mentions: [who],
