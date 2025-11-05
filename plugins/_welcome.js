@@ -91,7 +91,6 @@ ${fraseRandom}
 ╚═══════❀༺🍁༻❀═══════╝
 
 👋 *Usuario:* @${numeroUsuario}
-💬 *Nombre:* ${nombre}
 🌷 *Grupo:* ${groupMetadata?.subject ?? 'Grupo'}
 👥 *Miembros restantes:* ${groupSize}
 
