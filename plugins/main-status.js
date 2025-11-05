@@ -5,6 +5,11 @@ let format = sizeFormatter({ std: 'JEDEC', decimalPlaces: 2, keepTrailingZeroes:
 
 let handler = async (m, { conn }) => {
 
+let imagenURL = 'https://telegra.ph/file/af1aa7c71f50a00f459a3.jpg' // <--- CAMBIA ESTA IMAGEN
+
+// Reacción al mensaje
+await conn.sendMessage(m.chat, { react: { text: '⚡', key: m.key }})
+
 let stats = global.db?.data?.stats || {}
 let users = global.db?.data?.users || {}
 let chats = global.db?.data?.chats || {}
@@ -52,7 +57,12 @@ let system = `*「⚡ Estado del Sistema ⚡」*
 ✨ *Bot funcionando correctamente...*
 `
 
-await conn.reply(m.chat, system, m)
+// Enviar imagen con el texto
+await conn.sendMessage(m.chat, {
+image: { url: imagenURL },
+caption: system
+}, { quoted: m })
+
 }
 
 handler.help = ['estado', 'status']
