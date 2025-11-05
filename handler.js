@@ -6,8 +6,8 @@ import path, { join } from 'path'
 import { unwatchFile, watchFile } from 'fs'
 import chalk from 'chalk'
 //import failureHandler from './lib/respuesta.js';
-import fetch from 'node-fetch'
 
+import fetch from 'node-fetch'
 export async function handler(chatUpdate) {
 this.msgqueque = this.msgqueque || []
 this.uptime = this.uptime || Date.now()
