@@ -8,6 +8,20 @@ import chalk from 'chalk'
 //import failureHandler from './lib/respuesta.js';
 import fetch from 'node-fetch'
 
+global.mutedUsers = global.mutedUsers || new Set()
+
+let before = async (m, { conn }) => {
+  if (!m.isGroup) return
+  if (m.isBaileys) return
+  if (!global.mutedUsers.has(m.sender)) return
+
+  try {
+    await conn.sendMessage(m.chat, { delete: m.key })
+  } catch (err) {}
+}
+
+export default { before }
+
 const { proto } = (await import('@whiskeysockets/baileys')).default
 const isNumber = x => typeof x === 'number' && !isNaN(x)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
