@@ -65,7 +65,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
     // ─── Mensaje de bienvenida ───
     const welcomeMessage = `
 ╔═══════❀༺🌸༻❀═══════╗
-             *ＢＩＥＮＶＥＮＩＤＯ／Ａ*
+            *ＢＩＥＮＶＥＮＩＤＯ／Ａ*
 ╚═══════❀༺🌸༻❀═══════╝
 
 ✨ *Usuario:* @${numeroUsuario}
@@ -87,7 +87,7 @@ ${fraseRandom}
     // ─── Mensaje de despedida ───
     const byeMessage = `
 ╔═══════❀༺🍁༻❀═══════╗
-                       *ＡＤＩＯＳ*
+                        *ＡＤＩＯＳ*
 ╚═══════❀༺🍁༻❀═══════╝
 
 👋 *Usuario:* @${numeroUsuario}
