@@ -8,7 +8,7 @@ const handler = async (m, { conn, isROwner, text }) => {
   if (!isROwner) return m.reply('❌ Solo el/los owner(s) pueden usar este comando.');
 
   const emoji = '⚡'
-  const packname = '\n\n— Enviado por OmarGranda'      // texto añadido al final del mensaje
+  const packname = '\n\n— Enviado por *OmarGranda*'      // texto añadido al final del mensaje
   const imagenURL = ''                           // si pones una URL, enviará imagen + caption. deja vacío para texto
   const DEFAULT_DELAY_MS = 900                   // tiempo entre envíos (ajusta)
   const mentionAllByDefault = false              // si quieres mencionar a todos por defecto
