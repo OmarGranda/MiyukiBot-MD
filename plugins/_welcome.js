@@ -6,15 +6,74 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
   const chat = global.db.data.chats[m.chat]
 
+  // 🌍 Función para detectar país por prefijo
   const getPais = (numero) => {
     const paises = {
-      "1": "🇺🇸 Estados Unidos", "34": "🇪🇸 España", "52": "🇲🇽 México",
-      "54": "🇦🇷 Argentina", "55": "🇧🇷 Brasil", "56": "🇨🇱 Chile",
-      "57": "🇨🇴 Colombia", "58": "🇻🇪 Venezuela", "591": "🇧🇴 Bolivia",
-      "593": "🇪🇨 Ecuador", "595": "🇵🇾 Paraguay", "598": "🇺🇾 Uruguay",
-      "502": "🇬🇹 Guatemala", "503": "🇸🇻 El Salvador", "504": "🇭🇳 Honduras",
-      "505": "🇳🇮 Nicaragua", "506": "🇨🇷 Costa Rica", "507": "🇵🇦 Panamá",
-      "51": "🇵🇪 Perú", "53": "🇨🇺 Cuba", "91": "🇮🇳 India"
+      "1": "🇺🇸 Estados Unidos / 🇨🇦 Canadá",
+      "7": "🇷🇺 Rusia / 🇰🇿 Kazajistán",
+      "20": "🇪🇬 Egipto", "27": "🇿🇦 Sudáfrica",
+      "30": "🇬🇷 Grecia", "31": "🇳🇱 Países Bajos", "32": "🇧🇪 Bélgica",
+      "33": "🇫🇷 Francia", "34": "🇪🇸 España", "36": "🇭🇺 Hungría",
+      "39": "🇮🇹 Italia", "40": "🇷🇴 Rumania", "41": "🇨🇭 Suiza",
+      "43": "🇦🇹 Austria", "44": "🇬🇧 Reino Unido", "45": "🇩🇰 Dinamarca",
+      "46": "🇸🇪 Suecia", "47": "🇳🇴 Noruega", "48": "🇵🇱 Polonia",
+      "49": "🇩🇪 Alemania", "51": "🇵🇪 Perú", "52": "🇲🇽 México",
+      "53": "🇨🇺 Cuba", "54": "🇦🇷 Argentina", "55": "🇧🇷 Brasil",
+      "56": "🇨🇱 Chile", "57": "🇨🇴 Colombia", "58": "🇻🇪 Venezuela",
+      "60": "🇲🇾 Malasia", "61": "🇦🇺 Australia", "62": "🇮🇩 Indonesia",
+      "63": "🇵🇭 Filipinas", "64": "🇳🇿 Nueva Zelanda", "65": "🇸🇬 Singapur",
+      "66": "🇹🇭 Tailandia", "81": "🇯🇵 Japón", "82": "🇰🇷 Corea del Sur",
+      "84": "🇻🇳 Vietnam", "86": "🇨🇳 China", "90": "🇹🇷 Turquía",
+      "91": "🇮🇳 India", "92": "🇵🇰 Pakistán", "93": "🇦🇫 Afganistán",
+      "94": "🇱🇰 Sri Lanka", "95": "🇲🇲 Birmania", "98": "🇮🇷 Irán",
+      "212": "🇲🇦 Marruecos", "213": "🇩🇿 Argelia", "216": "🇹🇳 Túnez",
+      "218": "🇱🇾 Libia", "220": "🇬🇲 Gambia", "221": "🇸🇳 Senegal",
+      "222": "🇲🇷 Mauritania", "223": "🇲🇱 Mali", "224": "🇬🇳 Guinea",
+      "225": "🇨🇮 Costa de Marfil", "226": "🇧🇫 Burkina Faso",
+      "227": "🇳🇪 Níger", "228": "🇹🇬 Togo", "229": "🇧🇯 Benín",
+      "230": "🇲🇺 Mauricio", "231": "🇱🇷 Liberia", "232": "🇸🇱 Sierra Leona",
+      "233": "🇬🇭 Ghana", "234": "🇳🇬 Nigeria", "235": "🇹🇩 Chad",
+      "236": "🇨🇫 RCA", "237": "🇨🇲 Camerún", "238": "🇨🇻 Cabo Verde",
+      "239": "🇸🇹 Santo Tomé", "240": "🇬🇶 Guinea Ecuatorial",
+      "241": "🇬🇦 Gabón", "242": "🇨🇬 Congo", "243": "🇨🇩 R.D. Congo",
+      "244": "🇦🇴 Angola", "248": "🇸🇨 Seychelles", "249": "🇸🇩 Sudán",
+      "250": "🇷🇼 Ruanda", "251": "🇪🇹 Etiopía", "252": "🇸🇴 Somalia",
+      "254": "🇰🇪 Kenia", "255": "🇹🇿 Tanzania", "256": "🇺🇬 Uganda",
+      "257": "🇧🇮 Burundi", "258": "🇲🇿 Mozambique", "260": "🇿🇲 Zambia",
+      "261": "🇲🇬 Madagascar", "263": "🇿🇼 Zimbabue",
+      "264": "🇳🇦 Namibia", "265": "🇲🇼 Malaui", "266": "🇱🇸 Lesoto",
+      "267": "🇧🇼 Botsuana", "268": "🇸🇿 Esuatini",
+      "291": "🇪🇷 Eritrea", "297": "🇦🇼 Aruba",
+      "351": "🇵🇹 Portugal", "352": "🇱🇺 Luxemburgo",
+      "353": "🇮🇪 Irlanda", "354": "🇮🇸 Islandia",
+      "355": "🇦🇱 Albania", "356": "🇲🇹 Malta",
+      "358": "🇫🇮 Finlandia", "359": "🇧🇬 Bulgaria",
+      "370": "🇱🇹 Lituania", "371": "🇱🇻 Letonia",
+      "372": "🇪🇪 Estonia", "380": "🇺🇦 Ucrania",
+      "381": "🇷🇸 Serbia", "385": "🇭🇷 Croacia",
+      "387": "🇧🇦 Bosnia", "389": "🇲🇰 Macedonia",
+      "502": "🇬🇹 Guatemala", "503": "🇸🇻 El Salvador",
+      "504": "🇭🇳 Honduras", "505": "🇳🇮 Nicaragua",
+      "506": "🇨🇷 Costa Rica", "507": "🇵🇦 Panamá",
+      "509": "🇭🇹 Haití", "591": "🇧🇴 Bolivia",
+      "592": "🇬🇾 Guyana", "593": "🇪🇨 Ecuador",
+      "595": "🇵🇾 Paraguay", "597": "🇸🇷 Surinam",
+      "598": "🇺🇾 Uruguay", "670": "🇹🇱 Timor Oriental",
+      "850": "🇰🇵 Corea del Norte", "852": "🇭🇰 Hong Kong",
+      "853": "🇲🇴 Macao", "855": "🇰🇭 Camboya",
+      "856": "🇱🇦 Laos", "880": "🇧🇩 Bangladesh",
+      "886": "🇹🇼 Taiwán", "960": "🇲🇻 Maldivas",
+      "961": "🇱🇧 Líbano", "962": "🇯🇴 Jordania",
+      "963": "🇸🇾 Siria", "964": "🇮🇶 Irak",
+      "965": "🇰🇼 Kuwait", "966": "🇸🇦 Arabia Saudita",
+      "967": "🇾🇪 Yemen", "968": "🇴🇲 Omán",
+      "971": "🇦🇪 Emiratos Árabes Unidos",
+      "972": "🇮🇱 Israel", "973": "🇧🇭 Baréin",
+      "974": "🇶🇦 Catar", "975": "🇧🇹 Bután",
+      "977": "🇳🇵 Nepal", "992": "🇹🇯 Tayikistán",
+      "993": "🇹🇲 Turkmenistán", "994": "🇦🇿 Azerbaiyán",
+      "995": "🇬🇪 Georgia", "996": "🇰🇬 Kirguistán",
+      "998": "🇺🇿 Uzbekistán"
     }
     for (let i = 1; i <= 3; i++) {
       const prefijo = numero.slice(0, i)
@@ -23,10 +82,13 @@ export async function before(m, { conn, participants, groupMetadata }) {
     return "🌎 Desconocido"
   }
 
+  // 🧍 Datos del usuario
   const usuarioJid = m.messageStubParameters[0] || m.key.participant
   const numeroUsuario = usuarioJid.split('@')[0]
   const pais = getPais(numeroUsuario)
+  const nombre = await conn.getName(usuarioJid).catch(() => numeroUsuario)
 
+  // Imagen de perfil
   const ppUrl = await conn.profilePictureUrl(usuarioJid, 'image')
     .catch(_ => 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg')
 
@@ -38,68 +100,71 @@ export async function before(m, { conn, participants, groupMetadata }) {
     participant: "0@s.whatsapp.net"
   }
 
+  // Fecha / hora
   const fechaObj = new Date()
   const hora = fechaObj.toLocaleTimeString('es-PE', { timeZone: 'America/Lima' })
   const fecha = fechaObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Lima' })
   const dia = fechaObj.toLocaleDateString('es-PE', { weekday: 'long', timeZone: 'America/Lima' })
   const groupSize = participants.length + ((m.messageStubType === 27) ? 1 : ((m.messageStubType === 28 || m.messageStubType === 32) ? -1 : 0))
 
-  const fakeContext = {
-    contextInfo: {
-      isForwarded: true,
-      mentionedJid: [usuarioJid],
-      externalAdReply: {
-        title: "MiyukiBot-MD",
-        body: "By OmarGranda",
-        mediaUrl: null,
-        description: null,
-        previewType: "PHOTO",
-        thumbnailUrl: "https://qu.ax/gauVK.jpg",
-        sourceUrl: "https://whatsapp.com",
-        mediaType: 1,
-        renderLargerThumbnail: false
-      }
-    }
-  }
+  const frasesBienvenida = [
+    "🌸 ¡Qué alegría verte aquí!",
+    "🌼 ¡Esperábamos tu llegada!",
+    "🌺 Bienvenido a nuestra familia.",
+    "🎉 ¡Prepárate para una gran aventura!",
+    "💫 ¡Un nuevo miembro se une al viaje!"
+  ]
+  const frasesDespedida = [
+    "🍂 Se va un gran miembro...",
+    "💨 ¡Hasta pronto, te extrañaremos!",
+    "🌧️ Otro amigo se despide.",
+    "🍃 Que el viento te guíe a nuevas aventuras.",
+    "💔 ¡Nos vemos en otro grupo!"
+  ]
 
-  const welcomeMessage = `╔══════════════════╗  
-     *ＢＩＥＮＶＥＮＩＤＯ／Ａ* 
-╚══════════════════╝  
+  const bienvenidaAleatoria = frasesBienvenida[Math.floor(Math.random() * frasesBienvenida.length)]
+  const despedidaAleatoria = frasesDespedida[Math.floor(Math.random() * frasesDespedida.length)]
 
-🌸 *Grupo:* ${groupMetadata.subject}  
-👤 *Usuario:* @${numeroUsuario}
-  
+  const welcomeMessage = `
+╔═══════❀༺🌸༻❀═══════╗  
+     *ＢＩＥＮＶＥＮＩＤＯ／Ａ*  
+╚═══════❀༺🌸༻❀═══════╝  
+
+${bienvenidaAleatoria}
+
+👤 *Usuario:* @${numeroUsuario} (${nombre})  
+🌍 *País:* ${pais}  
+💬 *Grupo:* ${groupMetadata.subject}  
 👥 *Miembros:* ${groupSize}  
 📅 *Fecha:* ${dia}, ${fecha}  
 🕒 *Hora:* ${hora}  
-🌍 *País:* ${pais}  
 
-📌 Usa _.menu_ para ver la lista de comandos.
-
-> 𝘔𝘪𝘺𝘶𝘬𝘪𝘉𝘰𝘵-𝘔𝘋 | © 𝘗𝘰𝘸𝘦𝘳𝘦𝘥 𝘉𝘺 𝘖𝘮𝘢𝘳𝘎𝘳𝘢𝘯𝘥𝘢`
+🪷 Usa _.menu_ para ver los comandos.  
+> 𝘔𝘪𝘺𝘶𝘬𝘪𝘉𝘰𝘵-𝘔𝘋 | 𝘗𝘰𝘸𝘦𝘳𝘦𝘥 𝘉𝘺 𝘖𝘮𝘢𝘳𝘎𝘳𝘢𝘯𝘥𝘢
+`
 
   const byeMessage = `
-╔══════════════════╗  
-                *ＡＤＩＯＳ* 
-╚══════════════════╝  
+╔═══════❀༺🍁༻❀═══════╗  
+           *ＡＤＩＯＳ*  
+╚═══════❀༺🍁༻❀═══════╝  
 
-🏷️ *Grupo:* ${groupMetadata.subject}  
-🧸 *Usuario:* @${numeroUsuario}  
+${despedidaAleatoria}
 
+👤 *Usuario:* @${numeroUsuario} (${nombre})  
+🌎 *País:* ${pais}  
+💬 *Grupo:* ${groupMetadata.subject}  
 👥 *Miembros restantes:* ${groupSize}  
 📅 *Fecha:* ${dia}, ${fecha}  
-⏰ *Hora:* ${hora}  
-🌎 *País:* ${pais}  
+🕒 *Hora:* ${hora}  
 
-🍃 Esperamos verte pronto de nuevo 🌼  
-  
-> 𝘔𝘪𝘺𝘶𝘬𝘪𝘉𝘰𝘵-𝘔𝘋 | © 𝘗𝘰𝘸𝘦𝘳𝘦𝘥 𝘉𝘺 𝘖𝘮𝘢𝘳𝘎𝘳𝘢𝘯𝘥𝘢`
+> 💐 Esperamos verte pronto nuevamente.
+> 𝘔𝘪𝘺𝘶𝘬𝘪𝘉𝘰𝘵-𝘔𝘋 | 𝘖𝘮𝘢𝘳𝘎𝘳𝘢𝘯𝘥𝘢
+`
 
   if (chat?.welcome && m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
     await conn.sendMessage(m.chat, {
       image: { url: ppUrl },
       caption: welcomeMessage,
-      ...fakeContext,
       footer: "☆ MiyukiBot-MD ☆",
       mentions: [usuarioJid]
     }, { quoted: fkontak })
@@ -109,7 +174,6 @@ export async function before(m, { conn, participants, groupMetadata }) {
     await conn.sendMessage(m.chat, {
       image: { url: ppUrl },
       caption: byeMessage,
-      ...fakeContext,
       footer: "☆ MiyukiBot-MD ☆",
       mentions: [usuarioJid]
     }, { quoted: fkontak })
