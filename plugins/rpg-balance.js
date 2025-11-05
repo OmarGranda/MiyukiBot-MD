@@ -1,34 +1,60 @@
 let handler = async (m, { conn, usedPrefix }) => {
-  if (!db.data.chats[m.chat].economy && m.isGroup) {
-    return m.reply(`🚫 *Los comandos de Economía están desactivados en este grupo.*\n\n💡 Un *administrador* puede activarlos con:\n» *${usedPrefix}economy on*`)
-  }
+  try {
+    // Comprueba si la economía está desactivada en el chat (si aplica)
+    if (db?.data?.chats?.[m.chat]?.economy === false && m.isGroup) {
+      return m.reply(
+        `🚫 *Los comandos de Economía están desactivados en este grupo.*\n\n💡 Un administrador puede activarlos con:\n» *${usedPrefix}economy on*`
+      )
+    }
 
-  let mentionedJid = await m.mentionedJid
-  let who = mentionedJid[0] ? mentionedJid[0] : m.quoted ? await m.quoted.sender : m.sender
+    // Obtener quién (mencionado / citado / autor)
+    const mentioned = Array.isArray(m.mentionedJid) && m.mentionedJid.length
+      ? m.mentionedJid[0]
+      : m.quoted?.sender
+        ? m.quoted.sender
+        : m.sender
 
-  if (!(who in global.db.data.users)) return m.reply(`❌ *El usuario no se encuentra en mi base de datos.*`)
+    const who = mentioned
 
-  let user = global.db.data.users[who]
-  let name = await (async () => user.name || (async () => { 
-    try { 
-      const n = await conn.getName(who)
-      return typeof n === 'string' && n.trim() ? n : who.split('@')[0] 
-    } catch { 
-      return who.split('@')[0] 
-    } 
-  })())()
+    // Si no existe el usuario en la base de datos, crea una estructura por defecto
+    if (!global.db) global.db = { data: { users: {}, chats: {} } }
+    if (!global.db.data.users[who]) {
+      // opcional: puedes no crear y en su lugar devolver un mensaje de error
+      global.db.data.users[who] = {
+        name: who.split('@')[0],
+        coin: 0,
+        bank: 0,
+        level: 1,
+        exp: 0,
+        rank: '👤 Civil'
+      }
+    }
 
-  // Datos del usuario
-  let coin = user.coin || 0
-  let bank = user.bank || 0
-  let total = coin + bank
-  let level = user.level || 1
-  let exp = user.exp || 0
-  let rank = user.rank || "👤 Civil"
-  let currency = "💴"
+    // Nombre (intenta obtener el nombre real desde conn si existe)
+    let name = global.db.data.users[who].name
+    if (!name || !name.trim()) {
+      try {
+        const n = await conn.getName?.(who)
+        if (typeof n === 'string' && n.trim()) name = n
+        else name = who.split('@')[0]
+      } catch {
+        name = who.split('@')[0]
+      }
+    }
 
-  // Texto estético
-  const texto = `🌸 *Perfil Financiero de ${name}* 🌸
+    // Datos del usuario (con valores por defecto)
+    const user = global.db.data.users[who] || {}
+    const coin = Number(user.coin) || 0
+    const bank = Number(user.bank) || 0
+    const total = coin + bank
+    const level = Number(user.level) || 1
+    const exp = Number(user.exp) || 0
+    const rank = user.rank || '👤 Civil'
+    // Si en tu proyecto usas una variable global `currency`, úsala; si no, usamos este emoji
+    const currency = (typeof global?.currency === 'string' && global.currency) || '¥'
+
+    // Texto estético
+    const texto = `🌸 *Perfil Financiero de ${name}* 🌸
 
 ╭─────────────❀
 │ 👤 *Usuario:* ${name}
@@ -48,13 +74,28 @@ let handler = async (m, { conn, usedPrefix }) => {
 ⚙️ *Comandos útiles:* *${usedPrefix}work*, *${usedPrefix}rob*, *${usedPrefix}daily*
 `
 
-  await conn.sendMessage(m.chat, {
-    image: { url: 'https://qu.ax/qKZek.jpg' }, // puedes cambiar la imagen por otra más bonita
-    caption: texto,
-    fileName: 'balance.jpg',
-    mentions: [who],
-    ...rcanal
-  }, { quoted: m })
+    // Evita fallos si rcanal no está definido (extra puede ser {})
+    const extra = typeof rcanal !== 'undefined' ? rcanal : {}
+
+    // Envía el mensaje con imagen (si la url no funciona, cambia por otra)
+    await conn.sendMessage(
+      m.chat,
+      {
+        image: { url: 'https://qu.ax/wnFsi.jpg' }, // reemplaza por la imagen que prefieras
+        caption: texto,
+        fileName: 'balance.jpg',
+        mentions: [who],
+        ...extra
+      },
+      { quoted: m }
+    )
+  } catch (error) {
+    console.error('Error en comando bal:', error)
+    // Responde al usuario si algo falló
+    try {
+      await m.reply('❌ Ocurrió un error al mostrar el balance. Revisa la consola del bot.')
+    } catch {}
+  }
 }
 
 handler.help = ['bal']
