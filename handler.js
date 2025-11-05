@@ -332,6 +332,10 @@ __filename
 }))
 continue
 }
+if (typeof global.plugins !== 'object' || !global.plugins) {
+  global.plugins = {}
+  console.log('[AutoFix] Se inicializó global.plugins porque estaba undefined.')
+}
 if (typeof plugin !== 'function')
 continue
 if ((usedPrefix = (match[0] || '')[0])) {
