@@ -6,9 +6,10 @@ const empresa = "𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 ⚡"
 const numCreador = "51927303598"
 const correo = "omargranda673@gmail.com"
 const web = "https://github.com/OmarGranda"
-const canal = "https://whatsapp.com/channel/0029VaAoXNsKfvfZHv9cuG0G"
 const about = "Desarrollador oficial de MiyukiBot MD 🧑‍💻"
 const direccion = "Perú 🇵🇪"
+const instagram = "https://instagram.com/"
+const canal = "https://whatsapp.com/channel/0029VaAoXNsKfvfZHv9cuG0G" // Cambia si tienes canal oficial
 
 const vcard = `
 BEGIN:VCARD
@@ -31,47 +32,37 @@ const contactMessage = { displayName: name, vcard }
 
 let handler = async (m, { conn }) => {
 
-  await m.react("👑")
+await m.react("👑")
 
-  let texto = `👑 *CREADOR OFICIAL DE MIYUKIBOT-MD* 👑
+await conn.sendMessage(m.chat, {
+  text: `👑 *CREADOR OFICIAL DE MIYUKIBOT-MD* 👑
 
 *Nombre:* ${name}
-*Cargo:* CEO & Desarrollador Principal
-*Ubicación:* ${direccion}
+*Rol:* CEO & Desarrollador Principal
+*País:* ${direccion}
 
 🌐 *GitHub:* ${web}
 📧 *Correo:* ${correo}
-🔗 *Canal Oficial:* ${canal}
+🔗 *Canal:* ${canal}
 
-> _¿Quieres tu propio bot o una versión personalizada? Escríbeme._
-`
-
-  const botones = [
-    { index: 1, urlButton: { displayText: "💬 Contactar en WhatsApp", url: `https://wa.me/${numCreador}` }},
-    { index: 2, urlButton: { displayText: "📂 GitHub Oficial", url: web }},
-    { index: 3, urlButton: { displayText: "📢 Canal Oficial", url: canal }},
-  ]
-
-  await conn.sendMessage(m.chat, {
-    text: texto,
-    footer: "MiyukiBot-MD ⚡ By OmarGranda",
-    templateButtons: botones,
-    contextInfo: {
-      externalAdReply: {
-        title: "Contacto del Creador 👑",
-        body: empresa,
-        thumbnailUrl: 'https://qu.ax/KVDzy.jpg',
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        sourceUrl: canal
-      }
+> _Si quieres un bot igual o personalizado, puedes comunicarte con mi creador._
+`,
+  contextInfo: {
+    mentionedJid: [m.sender],
+    externalAdReply: {
+      title: "Contacto Del Creador 👑",
+      body: empresa,
+      mediaType: 1,
+      thumbnailUrl: 'https://qu.ax/KVDzy.jpg', // Puedes cambiar la imagen
+      renderLargerThumbnail: true,
+      sourceUrl: canal
     }
-  }, { quoted: m })
+  }
+}, { quoted: m })
 
-  // Enviar contacto
-  await conn.sendMessage(m.chat, {
-    contacts: { displayName: name, contacts: [contactMessage] }
-  }, { quoted: m })
+await conn.sendMessage(m.chat, {
+  contacts: { displayName: name, contacts: [contactMessage] }
+}, { quoted: m })
 
 }
 
