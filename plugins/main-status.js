@@ -5,9 +5,8 @@ let format = sizeFormatter({ std: 'JEDEC', decimalPlaces: 2, keepTrailingZeroes:
 
 let handler = async (m, { conn }) => {
 
-let imagenURL = 'https://qu.ax/pyXPR.jpg' // <--- CAMBIA ESTA IMAGEN
+let imagenURL = 'https://qu.ax/pyXPR.jpg'
 
-// Reacción al mensaje
 await conn.sendMessage(m.chat, { react: { text: '⚡', key: m.key }})
 
 let stats = global.db?.data?.stats || {}
@@ -57,7 +56,6 @@ let system = `*「⚡ Estado del Sistema ⚡」*
 ✨ *Bot funcionando correctamente...*
 `
 
-// Enviar imagen con el texto
 await conn.sendMessage(m.chat, {
 image: { url: imagenURL },
 caption: system
