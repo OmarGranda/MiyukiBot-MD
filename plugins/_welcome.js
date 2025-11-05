@@ -129,7 +129,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
     const welcomeMessage = [
       `╔═══════❀༺🌸༻❀═══════╗`,
-      `        *ＢＩＥＮＶＥＮＩＤＯ／Ａ*`,
+      `         *ＢＩＥＮＶＥＮＩＤＯ／Ａ*`,
       `╚═══════❀༺🌸༻❀═══════╝`,
       ``,
       `${bienvenidaAleatoria}`,
@@ -147,7 +147,7 @@ export async function before(m, { conn, participants, groupMetadata }) {
 
     const byeMessage = [
       `╔═══════❀༺🍁༻❀═══════╗`,
-      `           *ＡＤＩＯＳ*`,
+      `                       *ＡＤＩＯＳ*`,
       `╚═══════❀༺🍁༻❀═══════╝`,
       ``,
       `${despedidaAleatoria}`,
