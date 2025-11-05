@@ -5,7 +5,7 @@ let format = sizeFormatter({ std: 'JEDEC', decimalPlaces: 2, keepTrailingZeroes:
 
 let handler = async (m, { conn }) => {
 
-let imagenURL = 'https://telegra.ph/file/af1aa7c71f50a00f459a3.jpg' // <--- CAMBIA ESTA IMAGEN
+let imagenURL = 'https://qu.ax/pyXPR.jpg' // <--- CAMBIA ESTA IMAGEN
 
 // Reacción al mensaje
 await conn.sendMessage(m.chat, { react: { text: '⚡', key: m.key }})
