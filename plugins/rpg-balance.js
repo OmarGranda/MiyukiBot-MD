@@ -92,7 +92,6 @@ let handler = async (m, { conn, usedPrefix }) => {
     }
 
 🪙 *Consejo:* Usa *${usedPrefix}deposit* para proteger tu dinero.
-⚙️ *Comandos útiles:* *${usedPrefix}work*, *${usedPrefix}rob*, *${usedPrefix}daily*
 `
 
     const extra = typeof rcanal !== 'undefined' ? rcanal : {}
