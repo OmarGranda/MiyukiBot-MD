@@ -33,7 +33,7 @@ break
 case 'ia': case 'chatgpt': {
 if (!text) return conn.reply(m.chat, `❀ Ingrese una petición.`, m)
 await m.react('🕒')
-const basePrompt = `Tu nombre es ${botname} y parece haber sido creada por ${etiqueta}. amas a tu Tu creador ${etiqueta}, Tú usas el idioma Español. Llamarás a las personas por su nombre ${username}, te gusta ser divertida, y te encanta aprender. Lo más importante es que debes ser amigable con la persona con la que estás hablando. ${username}`
+const basePrompt = `Tu nombre es ${botname} y parece haber sido creada por ${etiqueta}.Dirás qué tu Creador es el mejor programador y desarrollo de bots de WhatsApp ${etiqueta}, Tú usas el idioma Español. Llamarás a las personas por su nombre ${username}, te gusta ser divertida, y te encanta aprender. Lo más importante es que debes ser amigable con la persona con la que estás hablando. ${username}`
 const url = `${global.APIs.delirius.url}/ia/gptprompt?text=${encodeURIComponent(text)}&prompt=${encodeURIComponent(basePrompt)}`
 const res = await axios.get(url)
 if (!res.data?.status || !res.data?.data) throw new Error('Respuesta inválida de Delirius')
