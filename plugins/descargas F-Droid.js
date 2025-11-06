@@ -6,8 +6,7 @@ let handler = async (m, { text, conn }) => {
   await m.react('🕓')
 
   try {
-
-    // Nuevo buscador de F-Droid
+    // Nueva búsqueda en F-Droid
     let search = await fetch(`https://search.f-droid.org/?q=${encodeURIComponent(text)}&json=1`)
     let list = await search.json()
 
@@ -15,18 +14,19 @@ let handler = async (m, { text, conn }) => {
       return m.reply(`❌ No encontré resultados para: *${text}*`, m)
     }
 
-    // Tomar app principal encontrada
-    let appInfo = list.apps[0]
-    let pkg = appInfo.packageName
+    // Seleccionamos la primera coincidencia
+    let pkg = list.apps[0].packageName
 
-    // Obtener detalles y versiones de la app
+    // Obtener información de la app
     let data = await fetch(`https://f-droid.org/api/v1/packages/${pkg}`)
     let app = await data.json()
 
     if (!app || !app.packages) return m.reply(`⚠ No se pudo obtener información de la app.`, m)
 
     let versions = app.packages.reverse()
-    let listado = versions.map((v, i) => `*${i+1}.* v${v.versionName} — ${(v.size/1024/1024).toFixed(2)} MB`).join("\n")
+
+    // Crear lista de versiones
+    let listado = versions.map((v, i) => `*${i + 1}.* v${v.versionName} — ${(v.size / 1024 / 1024).toFixed(2)} MB`).join("\n")
 
     let caption = `
 🟦 *F-DROID — RESULTADO*
@@ -35,16 +35,16 @@ let handler = async (m, { text, conn }) => {
 🌍 *Repositorio:* F-Droid
 🔰 *Versión más reciente:* v${versions[0].versionName}
 
-*Elige una versión:* Responde con su número:
+*Responde con el número de la versión que deseas descargar:*
 
 ${listado}
     `.trim()
 
-    await conn.reply(m.chat, caption, m)
+    // Enviar mensaje y esperar respuesta
+    let msg = await conn.reply(m.chat, caption, m)
+    let reply = await conn.awaitReply(m.chat, m.sender, msg)
 
-    // Esperar respuesta del usuario
-    const res = await conn.waitForMessage(m.chat, m.sender)
-    let num = Number(res.text)
+    let num = Number(reply.trim())
 
     if (isNaN(num) || num < 1 || num > versions.length) {
       return m.reply(`❌ Número inválido. Cancelo.`, m)
@@ -60,7 +60,7 @@ ${listado}
         document: { url: selected.apkUrl },
         mimetype: 'application/vnd.android.package-archive',
         fileName: `${app.name}_v${selected.versionName}.apk`,
-        caption: `✅ *Descarga completada desde F-Droid*\n📌 *${app.name}* v${selected.versionName}`
+        caption: `✅ *Descarga completa desde F-Droid*\n📦 ${app.name}\n🆔 v${selected.versionName}`
       },
       { quoted: m }
     )
