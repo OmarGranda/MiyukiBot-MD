@@ -6,21 +6,27 @@ let handler = async (m, { text, conn }) => {
   await m.react('🕓')
 
   try {
-    // Buscar paquetes en F-Droid
-    let search = await fetch(`https://f-droid.org/api/v1/search.json?q=${encodeURIComponent(text)}`)
-    let data = await search.json()
 
-    if (!data.length) return m.reply(`❌ No encontré resultados para: *${text}*`)
+    // Nuevo buscador de F-Droid
+    let search = await fetch(`https://search.f-droid.org/?q=${encodeURIComponent(text)}&json=1`)
+    let list = await search.json()
 
-    // Tomar el primer resultado
-    let pkg = data[0].packageName
-    let info = await fetch(`https://f-droid.org/api/v1/packages/${pkg}`)
-    let app = await info.json()
+    if (!list.apps || list.apps.length === 0) {
+      return m.reply(`❌ No encontré resultados para: *${text}*`, m)
+    }
 
-    if (!app) return m.reply(`⚠ No se pudo obtener información del paquete.`)
+    // Tomar app principal encontrada
+    let appInfo = list.apps[0]
+    let pkg = appInfo.packageName
 
-    let versions = app.packages.reverse() // versiones más recientes arriba
-    let list = versions.map((v, i) => `*${i+1}.* v${v.versionName} (${(v.size/1024/1024).toFixed(2)} MB)`).join("\n")
+    // Obtener detalles y versiones de la app
+    let data = await fetch(`https://f-droid.org/api/v1/packages/${pkg}`)
+    let app = await data.json()
+
+    if (!app || !app.packages) return m.reply(`⚠ No se pudo obtener información de la app.`, m)
+
+    let versions = app.packages.reverse()
+    let listado = versions.map((v, i) => `*${i+1}.* v${v.versionName} — ${(v.size/1024/1024).toFixed(2)} MB`).join("\n")
 
     let caption = `
 🟦 *F-DROID — RESULTADO*
@@ -30,21 +36,21 @@ let handler = async (m, { text, conn }) => {
 🔰 *Versión más reciente:* v${versions[0].versionName}
 
 *Elige una versión:* Responde con su número:
-    
-${list}
+
+${listado}
     `.trim()
 
     await conn.reply(m.chat, caption, m)
 
-    // Esperar respuesta para elegir versión
-    const response = await conn.waitForMessage(m.chat, m.sender)
-    let choice = Number(response.text)
+    // Esperar respuesta del usuario
+    const res = await conn.waitForMessage(m.chat, m.sender)
+    let num = Number(res.text)
 
-    if (isNaN(choice) || choice < 1 || choice > versions.length){
-      return m.reply(`❌ Número inválido. Cancelo.`)
+    if (isNaN(num) || num < 1 || num > versions.length) {
+      return m.reply(`❌ Número inválido. Cancelo.`, m)
     }
 
-    let selected = versions[choice - 1]
+    let selected = versions[num - 1]
 
     await m.react('⬇️')
 
@@ -54,7 +60,7 @@ ${list}
         document: { url: selected.apkUrl },
         mimetype: 'application/vnd.android.package-archive',
         fileName: `${app.name}_v${selected.versionName}.apk`,
-        caption: `✅ *Descarga completada desde F-Droid*\n📦 *${app.name}* v${selected.versionName}`
+        caption: `✅ *Descarga completada desde F-Droid*\n📌 *${app.name}* v${selected.versionName}`
       },
       { quoted: m }
     )
@@ -63,7 +69,7 @@ ${list}
 
   } catch (e) {
     console.log(e)
-    m.reply(`❌ Ocurrió un error.\n\n${e.message}`)
+    m.reply(`❌ Ocurrió un error:\n${e.message}`, m)
     await m.react('❌')
   }
 }
