@@ -1,15 +1,19 @@
 const handler = async (m, { args, conn, usedPrefix }) => {
 try {
-if (!args[0]) return conn.reply(m.chat, `❀ Por favor, ingresa un enlace de Instagram/Facebook.`, m)
+if (!args[0]) return conn.reply(m.chat, `🌸 *Ingresa un enlace válido de Instagram o Facebook.*`, m)
+
 let data = []
+await m.react('⏳') // Indicador "Cargando..."
+
 try {
-await m.react('🕒')
 const api = `${global.APIs.vreden.url}/api/igdownload?url=${encodeURIComponent(args[0])}`
 const res = await fetch(api)
 const json = await res.json()
 if (json.resultado?.respuesta?.datos?.length) {
 data = json.resultado.respuesta.datos.map(v => v.url)
-}} catch {}
+}}
+catch (e) {}
+
 if (!data.length) {
 try {
 const api = `${global.APIs.delirius.url}/download/instagram?url=${encodeURIComponent(args[0])}`
@@ -17,15 +21,32 @@ const res = await fetch(api)
 const json = await res.json()
 if (json.status && json.data?.length) {
 data = json.data.map(v => v.url)
-}} catch {}
+}}
+catch (e) {}
 }
-if (!data.length) return conn.reply(m.chat, `ꕥ No se pudo obtener el contenido.`, m)
+
+if (!data.length) return conn.reply(m.chat, `🚫 *No se pudo obtener el contenido.*\nIntenta con otro enlace.`, m)
+
+// 🌟 NUEVA DESCRIPCIÓN BONITA AL ENVIAR EL VIDEO 🌟
 for (let media of data) {
-await conn.sendFile(m.chat, media, 'instagram.mp4', `❀ Aquí tienes ฅ^•ﻌ•^ฅ.`, m)
-await m.react('✔️')
-}} catch (error) {
-await m.react('✖️')
-await m.reply(`⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`)
+let caption = `
+╭───────❀ *DESCARGA COMPLETADA* ❀
+│ 🎬 *Video encontrado con éxito*
+│ 🌐 *Origen:* Instagram / Facebook
+│ 💾 *Descarga:* Exitosa sin marca de agua
+│ 💟 *Calidad:* Automática adaptativa
+│ 🪄 *Procesado por:* ${usedPrefix}ig
+╰─────────────────────❀
+✨ Disfrútalo y comparte 💗`
+
+await conn.sendFile(m.chat, media, `download_${new Date().getTime()}.mp4`, caption, m)
+}
+
+await m.react('✅')
+
+} catch (error) {
+await m.react('❌')
+await m.reply(`⚠️ *Error inesperado.*\nReporta usando *${usedPrefix}report*\n\n${error.message}`)
 }}
 
 handler.command = ['instagram', 'ig', 'facebook', 'fb']
