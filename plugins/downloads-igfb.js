@@ -34,8 +34,7 @@ let caption = `
 │ 🎬 *Video encontrado con éxito*
 │ 🌐 *Origen:* Instagram / Facebook
 │ 💾 *Descarga:* Exitosa sin marca de agua
-│ 💟 *Calidad:* Automática adaptativa
-│ 🪄 *Procesado por:* ${usedPrefix}ig
+│ 💟 *Calidad:* Full HD
 ╰─────────────────────❀
 ✨ Disfrútalo y comparte 💗`
 
