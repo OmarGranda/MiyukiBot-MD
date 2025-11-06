@@ -2,65 +2,65 @@ import { search, download } from 'aptoide-scraper'
 import fetch from 'node-fetch'
 import Jimp from 'jimp'
 
-var handler = async (m, { conn, usedPrefix, command, text }) => {
-  if (!text) return conn.reply(m.chat, `🕸️ Por favor, ingrese el nombre de la apk para descargarlo.`, m, rcanal)
+let handler = async (m, { conn, text, usedPrefix }) => {
+  if (!text) return m.reply(`🕸️ *Debes escribir el nombre de la APK*\n\nEjemplo:\n${usedPrefix}apk whatsapp`, m)
 
   try {
-    await m.react('🕒')
+    await m.react('🕓')
 
-    let searchA = await search(text)
-    if (!searchA.length) return conn.reply(m.chat, `⚠️ No se encontró ninguna app con ese nombre.`, m)
+    // Buscar apps
+    let result = await search(text)
+    if (!result || !result.length) return m.reply(`⚠️ No se encontró ninguna app con ese nombre.`, m)
 
-    let data5 = await download(searchA[0].id)
+    // Elegir la versión más reciente
+    let app = result[0]
+    let data = await download(app.id)
 
-    let txt = `*乂  APTOIDE - DESCARGAS 乂*\n\n`
-    txt += `≡ Nombre : ${data5.name}\n`
-    txt += `≡ Package : ${data5.package}\n`
-    txt += `≡ Update : ${data5.lastup}\n`
-    txt += `≡ Peso :  ${data5.size}`
+    let caption = `
+📦 *NOMBRE:* ${data.name}
+🆔 *PAQUETE:* ${data.package}
+⏱️ *ACTUALIZADO:* ${data.lastup}
+💾 *TAMAÑO:* ${data.size}
+`.trim()
 
-    await conn.sendFile(m.chat, data5.icon, 'thumbnail.jpg', txt, m, null, rcanal)
-
-    if (data5.size.includes('GB') || parseFloat(data5.size.replace(' MB', '')) > 999) {
-      return await conn.reply(m.chat, `ꕥ El archivo es demasiado pesado.`, m)
-    }
-
-    let thumbnail = null
+    // Intentar crear miniatura
+    let thumb = null
     try {
-      const img = await Jimp.read(data5.icon)
+      const img = await Jimp.read(data.icon)
       img.resize(300, Jimp.AUTO)
-      thumbnail = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch (err) {
-      console.log('⚠️ Error al crear miniatura:', err)
+      thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
+    } catch {}
+
+    // Enviar información
+    await conn.sendMessage(m.chat, { image: { url: data.icon }, caption }, { quoted: m })
+
+    // Evitar archivos gigantes
+    let size = parseFloat(data.size)
+    if (data.size.includes("GB") || size > 1000) {
+      return m.reply(`⚠️ *El APK es demasiado pesado para enviarlo.*`, m)
     }
 
+    // Enviar APK
     await conn.sendMessage(
       m.chat,
       {
-        document: { url: data5.dllink },
+        document: { url: data.dllink },
         mimetype: 'application/vnd.android.package-archive',
-        fileName: `${data5.name}.apk`,
-        caption: `°\n> ${dev}`,
-        ...(thumbnail ? { jpegThumbnail: thumbnail } : {})
+        fileName: `${data.name}.apk`,
+        caption: `✅ *Versión más reciente descargada exitosamente*`,
+        ...(thumb ? { jpegThumbnail: thumb } : {})
       },
-      { quoted: fkontak }
+      { quoted: m }
     )
 
     await m.react('✔️')
-  } catch (error) {
-    console.error(error)
-    return conn.reply(
-      m.chat,
-      `⚠︎ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`,
-      m
-    )
+
+  } catch (e) {
+    console.log(e)
+    m.reply(`❌ *Ocurrió un error al procesar tu solicitud.*\n\n> Intenta nuevamente o usa:\n${usedPrefix}report`, m)
+    await m.react('❌')
   }
 }
 
-handler.tags = ['descargas']
-handler.help = ['apkmod']
-handler.command = ['apk', 'modapk', 'aptoide']
-handler.group = true
-handler.premium = false
-
+handler.command = ["apk", "modapk", "aptoide"]
 export default handler
