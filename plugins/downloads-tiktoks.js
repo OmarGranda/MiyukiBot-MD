@@ -1,53 +1,40 @@
 import axios from 'axios'
 
 const handler = async (m, { conn, text, usedPrefix }) => {
-if (!text) return conn.reply(m.chat, `✨ *Uso correcto:*\n${usedPrefix}tiktok <link / nombre>\n\nEjemplos:\n${usedPrefix}tiktok https://vm.tiktok.com/xxxxxx\n${usedPrefix}tiktok anime aesthetic`, m)
+if (!text) return conn.reply(m.chat, `✦ *Uso correcto:* ${usedPrefix}tiktok <link / búsqueda>\n\nEjemplo:\n${usedPrefix}tiktok https://vm.tiktok.com/xxxxxx\n${usedPrefix}tiktok anime aesthetic`, m)
 
-const isUrl = /(tiktok\.com)/i.test(text)
+const isUrl = /(?:https:?\/{2})?(?:www\.|vm\.|vt\.|t\.)?tiktok\.com\/([^\s&]+)/gi.test(text)
 
 try {
 await m.react('⏳')
 
-// ━━━━━━━━━━━━━━━━━━━━
-// 🎥 DESCARGA DIRECTA
-// ━━━━━━━━━━━━━━━━━━━━
+// *** DESCARGA DIRECTA POR URL ***
 if (isUrl) {
-
 const res = await axios.get(`https://www.tikwm.com/api/?url=${encodeURIComponent(text)}&hd=1`)
 const data = res.data?.data
-if (!data) return conn.reply(m.chat, '❌ No se pudo obtener información del video.', m)
+if (!data?.play) return conn.reply(m.chat, '✘ No se encontró contenido descargable en el enlace.', m)
 
-const { title, duration, author, create_time, type, images, play, music, music_info, hdplay } = data
+const { title, duration, author, created_at, type, images, music, play, music_info } = data
+const caption = createCaption(title, author, duration, created_at, music_info)
 
-const caption = `🎀 *TIKTOK DESCARGADO*
-
-📌 *Título:* ${title || 'Sin título'}
-👤 *Autor:* ${author?.nickname || author?.unique_id}
-🕒 *Duración:* ${duration || '?'}s
-🎶 *Audio:* ${music_info?.title || 'Original'}
-📅 *Fecha:* ${new Date(create_time * 1000).toLocaleDateString()}
-`
-
-
-// ----- MENÚ DE BOTONES -----
-await conn.sendMessage(m.chat, {
-text: caption,
-buttons: [
-{ buttonId: `ttvideo ${play}`, buttonText: { displayText: '🎬 Descargar Video' }, type: 1 },
-{ buttonId: `tthd ${hdplay || play}`, buttonText: { displayText: '🟣 HD Max' }, type: 1 },
-{ buttonId: `ttmp3 ${music}`, buttonText: { displayText: '🎧 Descargar MP3' }, type: 1 },
-...(type === 'image' ? [{ buttonId: `ttimages ${JSON.stringify(images)}`, buttonText: { displayText: '🖼 Álbum de Fotos' }, type: 1 }] : []),
-],
-footer: `💗 Descargador Avanzado`
-}, { quoted: m })
-
-await m.react('✅')
-return
+if (type === 'image' && Array.isArray(images)) {
+const medias = images.map(url => ({ type: 'image', data: { url }, caption }))
+await conn.sendSylphy(m.chat, medias, { quoted: m })
+} else {
+await conn.sendMessage(m.chat, { video: { url: play }, caption }, { quoted: m })
 }
 
-// ━━━━━━━━━━━━━━━━━━━━
-// 🔍 BÚSQUEDA
-// ━━━━━━━━━━━━━━━━━━━━
+if (music) {
+await conn.sendMessage(m.chat, {
+audio: { url: music },
+mimetype: 'audio/mp4',
+fileName: (music_info?.title || 'tiktok_audio') + '.mp4'
+}, { quoted: m })
+}
+
+} else {
+
+// *** BÚSQUEDA ***
 const res = await axios({
 method: 'POST',
 url: 'https://tikwm.com/api/feed/search',
@@ -56,25 +43,51 @@ headers: {
 'Cookie': 'current_language=en',
 'User-Agent': 'Mozilla/5.0'
 },
-data: { keywords: text, count: 10, cursor: 0, HD: 1 }
+data: { keywords: text, count: 20, cursor: 0, HD: 1 }
 })
 
-const results = res.data?.data?.videos || []
-if (!results.length) return conn.reply(m.chat, '😿 No encontré resultados, intenta otro término.', m)
+const results = res.data?.data?.videos?.filter(v => v.play) || []
+if (!results.length) return conn.reply(m.chat, '✘ No se encontraron resultados con ese nombre.', m)
 
-let list = `🌸 *Resultados para:* _${text}_\n\n`
-results.slice(0, 10).forEach((v, i) => {
-list += `*${i+1}.* 🎬 ${v.title?.slice(0,60) || 'Sin título'}\n👤 ${v.author?.nickname}\n🎧 Escribe: ${usedPrefix}tiktok ${v.play}\n\n`
-})
+const medias = results.slice(0, 10).map(v => ({
+type: 'video',
+data: { url: v.play },
+caption: createSearchCaption(v)
+}))
 
-await conn.reply(m.chat, list, m)
-await m.react('✨')
+await conn.sendSylphy(m.chat, medias, { quoted: m })
+}
+
+await m.react('✅')
 
 } catch (e) {
+console.log(e)
 await m.react('❌')
-conn.reply(m.chat, `⚠ Error inesperado.\nReporta usando: *${usedPrefix}report*\n\n${e}`, m)
+conn.reply(m.chat, `⚠ Ocurrió un error inesperado.\nReporta usando *${usedPrefix}report*\n\n${e.message}`, m)
 }}
 
+// *** NUEVO DISEÑO DE CAPTION ***
+function createCaption(title, author, duration, created_at, music_info) {
+return `╭─❖『 *DESCARGA TIKTOK* 』❖
+│ ✦ *Título:* ${title || 'Sin título'}
+│ ✦ *Autor:* ${author?.nickname || author?.unique_id}
+│ ✦ *Duración:* ${duration}s
+│ ✦ *Fecha:* ${created_at || 'Desconocida'}
+│ ✦ *Audio:* ${music_info?.title || `${author?.nickname} - original sound`}
+╰───────────────✦`
+}
+
+// *** NUEVO CAPTION PARA RESULTADOS DE BÚSQUEDA ***
+function createSearchCaption(data) {
+return `• *${data.title || 'Sin título'}*
+👤 ${data.author?.nickname || 'Desconocido'} @${data.author?.unique_id || ''}
+⏱ Duración: ${data.duration || '?'}s
+🎶 Audio: ${data.music?.title || `${data.author?.nickname} - original sound`}`
+}
+
+handler.help = ['tiktok', 'tt']
+handler.tags = ['downloader']
 handler.command = ['tiktok', 'tt', 'tiktoks', 'tts']
 handler.group = true
+
 export default handler
