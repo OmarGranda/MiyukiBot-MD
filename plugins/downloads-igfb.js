@@ -30,7 +30,7 @@ if (!data.length) return conn.reply(m.chat, `🚫 *No se pudo obtener el conteni
 // 🌟 NUEVA DESCRIPCIÓN BONITA AL ENVIAR EL VIDEO 🌟
 for (let media of data) {
 let caption = `
-╭───────❀ *DESCARGA COMPLETADA* ❀
+╭─❀ *DESCARGA COMPLETADA* ❀
 │ 🎬 *Video encontrado con éxito*
 │ 🌐 *Origen:* Instagram / Facebook
 │ 💾 *Descarga:* Exitosa sin marca de agua
