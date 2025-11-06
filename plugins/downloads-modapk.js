@@ -16,7 +16,7 @@ let handler = async (m, { conn, text, usedPrefix }) => {
     let app = result[0]
     let data = await download(app.id)
 
-    let caption = `
+    let caption = `*乂  APTOIDE - DESCARGAS 乂*
 📦 *NOMBRE:* ${data.name}
 🆔 *PAQUETE:* ${data.package}
 ⏱️ *ACTUALIZADO:* ${data.lastup}
