@@ -1,71 +1,106 @@
 import fetch from 'node-fetch'
+import axios from 'axios'
 import Jimp from 'jimp'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 
-  if (!text) return m.reply(`🍂 *Ejemplo:*\n${usedPrefix + command} https://open.spotify.com/track/0RmVGwfIgezMi7EKB3lU0B`)
+  if (!text) {
+    return m.reply(`🍂 *Ejemplo de uso:*\n\n✎ ✧ \`${usedPrefix + command}\` https://open.spotify.com/track/0RmVGwfIgezMi7EKB3lU0B\n\n✎ ✧ \`${usedPrefix + command}\` TWICE - I CAN'T STOP ME`)
+  }
 
   try {
 
-    let api = ''
+    // Buscar canción (API funcional)
+    let search = await fetch(`https://api.delirius.store/search/spotify?q=${encodeURIComponent(text)}&limit=1`)
+    let sjson = await search.json()
 
-    if (text.includes('spotify.com/track')) {
-      api = `https://api.maelflac.online/spotify?query=${encodeURIComponent(text)}`
-    } else {
-      api = `https://api.maelflac.online/spotify?query=${encodeURIComponent(text)}`
+    if (!sjson.status || !sjson.data || !sjson.data[0]) throw "No encontré resultados en Spotify"
+
+    let track = sjson.data[0]
+
+    const title = track.name
+    const artist = track.artist
+    const image = track.image
+    const spotifyUrl = track.url
+    const durationMs = track.duration_ms || 0
+
+    const toMMSS = (ms) => {
+      if (ms <= 0) return "Desconocido"
+      const total = Math.floor(ms / 1000)
+      const min = Math.floor(total / 60)
+      const sec = total % 60
+      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    }
+    const duration = toMMSS(durationMs)
+
+    await conn.sendMessage(m.chat, { react: { text: '🎧', key: m.key } })
+
+    // Intentar descargar audio desde distintos servidores
+    let downloadUrl = null
+
+    // Método 1
+    try {
+      let dl = await axios.get(`https://api.nekolabs.my.id/downloader/spotify/v1?url=${encodeURIComponent(spotifyUrl)}`)
+      downloadUrl = dl?.data?.result?.downloadUrl
+    } catch {}
+
+    // Método 2 (fallback)
+    if (!downloadUrl) {
+      try {
+        let dl = await axios.get(`https://api.sylphy.xyz/download/spotify?url=${encodeURIComponent(spotifyUrl)}&apikey=sylphy-c519`)
+        downloadUrl = dl?.data?.data?.dl_url
+      } catch {}
     }
 
-    const res = await fetch(api)
-    if (!res.ok) throw `La API no respondió`
+    // Método 3 (última opción)
+    if (!downloadUrl) {
+      try {
+        let dl = await fetch(`https://api.neoxr.eu/api/spotify?url=${encodeURIComponent(spotifyUrl)}&apikey=russellxz`)
+        let j = await dl.json()
+        downloadUrl = j?.data?.url
+      } catch {}
+    }
 
-    const json = await res.json()
-    if (!json || !json.result || !json.result.download) throw `No pude obtener la descarga`
+    if (!downloadUrl) throw "No se pudo descargar la canción (todos los servidores fallaron)"
 
-    const title = json.result.title || "Desconocido"
-    const artist = json.result.artist || "Desconocido"
-    const duration = json.result.duration || "N/A"
-    const thumbnail = json.result.thumbnail
-    const download = json.result.download
-
+    // Convertir miniatura
     let thumb = null
     try {
-      const img = await Jimp.read(thumbnail)
+      const img = await Jimp.read(image)
       img.cover(300, 300)
       thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
-    } catch { thumb = null }
+    } catch {}
 
-    let caption = `🎶 *${title}*\n👤 *${artist}*\n⏱️ *${duration}*`
+    let caption = `\`\`\`🎶 Título: ${title}
+👤 Artista: ${artist}
+⏱️ Duración: ${duration}\`\`\``
 
+    // Enviar el archivo como audio reproducible
     await conn.sendMessage(m.chat, {
-      document: { url: download },
+      audio: { url: downloadUrl },
       mimetype: 'audio/mpeg',
       fileName: `${title}.mp3`,
-      caption,
       ...(thumb ? { jpegThumbnail: thumb } : {}),
       contextInfo: {
         externalAdReply: {
-          title,
+          title: title,
           body: artist,
+          thumbnailUrl: image,
+          sourceUrl: spotifyUrl,
           mediaType: 2,
-          ...(thumb ? { thumbnail: thumb } : { thumbnailUrl: thumbnail }),
           renderLargerThumbnail: true
         }
       }
     }, { quoted: m })
 
-    await conn.sendMessage(m.chat, {
-      audio: { url: download },
-      mimetype: 'audio/mpeg'
-    }, { quoted: m })
-
-  } catch (err) {
-    console.log(err)
-    return m.reply(`❌ Error al procesar la descarga.\n\n> ${err}`)
+  } catch (e) {
+    console.error(e)
+    m.reply(`❌ Error al procesar la descarga de Spotify.\n\n> ${e}`)
   }
 }
 
 handler.help = ['music <url|nombre>']
 handler.tags = ['dl']
-handler.command = ['music']
+handler.command = ['music', 'spotify', 'splay']
 
 export default handler
