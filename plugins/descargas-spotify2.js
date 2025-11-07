@@ -7,30 +7,35 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
 
-    const api = `https://api.gifteddev.xyz/api/spotifydl?url=${encodeURIComponent(text)}`
+    let api = ''
+
+    if (text.includes('spotify.com/track')) {
+      api = `https://api.maelflac.online/spotify?query=${encodeURIComponent(text)}`
+    } else {
+      api = `https://api.maelflac.online/spotify?query=${encodeURIComponent(text)}`
+    }
+
     const res = await fetch(api)
     if (!res.ok) throw `La API no respondió`
 
-    const data = await res.json()
-    if (!data || !data.result || !data.result.download) throw `No pude obtener la descarga`
+    const json = await res.json()
+    if (!json || !json.result || !json.result.download) throw `No pude obtener la descarga`
 
-    const title = data.result.title || "Desconocido"
-    const artist = data.result.artist || "Desconocido"
-    const duration = data.result.duration || "N/A"
-    const image = data.result.thumbnail
-    const download = data.result.download
+    const title = json.result.title || "Desconocido"
+    const artist = json.result.artist || "Desconocido"
+    const duration = json.result.duration || "N/A"
+    const thumbnail = json.result.thumbnail
+    const download = json.result.download
 
-    // 🖼 Miniatura
     let thumb = null
     try {
-      const img = await Jimp.read(image)
+      const img = await Jimp.read(thumbnail)
       img.cover(300, 300)
       thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
     } catch { thumb = null }
 
     let caption = `🎶 *${title}*\n👤 *${artist}*\n⏱️ *${duration}*`
 
-    // 📥 Enviar como documento descargable
     await conn.sendMessage(m.chat, {
       document: { url: download },
       mimetype: 'audio/mpeg',
@@ -42,19 +47,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
           title,
           body: artist,
           mediaType: 2,
-          ...(thumb ? { thumbnail: thumb } : { thumbnailUrl: image }),
-          renderLargerThumbnail: true,
-          sourceUrl: text
+          ...(thumb ? { thumbnail: thumb } : { thumbnailUrl: thumbnail }),
+          renderLargerThumbnail: true
         }
       }
     }, { quoted: m })
 
-    // 🎧 También reproducible
-    await conn.sendFile(m.chat, download, `${title}.mp3`, null, m)
+    await conn.sendMessage(m.chat, {
+      audio: { url: download },
+      mimetype: 'audio/mpeg'
+    }, { quoted: m })
 
   } catch (err) {
     console.log(err)
-    return m.reply(`❌ Error al procesar la descarga.\n\n${err}`)
+    return m.reply(`❌ Error al procesar la descarga.\n\n> ${err}`)
   }
 }
 
