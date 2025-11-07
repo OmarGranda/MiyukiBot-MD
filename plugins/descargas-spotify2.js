@@ -7,7 +7,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 
   try {
-    let info, json
+    let info = null
+    let json = null
 
     if (text.includes("spotify.com/track")) {
       const url1 = `https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(text)}`
@@ -24,7 +25,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         url: j1.data.url
       }
 
-      const query = encodeURIComponent(j1.data.title + " " + j1.data.author)
+      const query = encodeURIComponent((j1.data.title || '') + " " + (j1.data.author || ''))
       const resInfo = await fetch(`https://api.yupra.my.id/api/search/spotify?q=${query}`)
       if (resInfo.ok) {
         const jInfo = await resInfo.json()
@@ -40,6 +41,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       info = jSearch.result[0]
 
       const previewUrl = info.spotify_preview
+      if (!previewUrl) throw "No hay preview disponible para descarga"
+
       const resDl = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(previewUrl)}`)
       if (!resDl.ok) throw await resDl.text()
       const jDl = await resDl.json()
@@ -57,8 +60,22 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const name = json.title || "Desconocido"
     const author = json.author || "Desconocido"
     const download = json.url
-    const durationMs = json.duration || 0
-    const duration = durationMs > 0 ? new Date(durationMs).toISOString().substr(14, 5) : "Desconocido"
+    const durationRaw = json.duration || 0
+
+    // Normaliza duración: puede venir en ms o s. Si es razonablemente pequeño lo tomamos como segundos.
+    let durationMs = Number(durationRaw) || 0
+    if (durationMs > 0 && durationMs < 1000 * 60 * 60 && durationMs < 10000) {
+      // parece ser segundos -> convertir a ms
+      durationMs = durationMs * 1000
+    }
+    const toMMSS = (ms) => {
+      if (!ms || ms <= 0) return "Desconocido"
+      const total = Math.floor(ms / 1000)
+      const min = Math.floor(total / 60)
+      const sec = total % 60
+      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    }
+    const duration = toMMSS(durationMs)
 
     await conn.sendMessage(m.chat, { react: { text: '🕓', key: m.key } })
 
@@ -71,17 +88,20 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 👤 Artista: ${author}
 ⏱️ Duración: ${duration}\`\`\`${moreInfo}`
 
+    // preparar miniatura (buffer)
     let thumb = null
     if (json.image) {
       try {
         const img = await Jimp.read(json.image)
-        img.resize(300, Jimp.AUTO)
+        img.cover(300, 300) // recorta/ajusta a 300x300
         thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
       } catch (err) {
         console.log("⚠️ Error al procesar miniatura:", err)
+        thumb = null
       }
     }
 
+    // enviar como documento (archivo mp3 descargable)
     await conn.sendMessage(m.chat, {
       document: { url: download },
       mimetype: 'audio/mpeg',
@@ -93,31 +113,34 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
           title: name,
           body: `👤 ${author} • ⏱️ ${duration}`,
           mediaType: 2,
-          thumbnailUrl: json.image,
+          // si tenemos buffer lo usamos como thumbnail directo
+          ...(thumb ? { thumbnail: thumb } : (json.image ? { thumbnailUrl: json.image } : {})),
           renderLargerThumbnail: true,
-          sourceUrl: text
+          sourceUrl: (text && text.startsWith('http')) ? text : (info?.spotify_url || '')
         }
       }
-    }, { quoted: fkontak })
+    }, { quoted: m })
 
+    // enviar también como audio (reproducción rápida en el chat)
     await conn.sendMessage(m.chat, {
       audio: { url: download },
       mimetype: 'audio/mpeg',
       fileName: `${name}.mp3`,
+      ...(thumb ? { jpegThumbnail: thumb } : {}),
       contextInfo: {
         externalAdReply: {
           title: name,
           body: `👤 ${author} • ⏱️ ${duration}`,
           mediaType: 2,
-          thumbnailUrl: json.image,
+          ...(thumb ? { thumbnail: thumb } : (json.image ? { thumbnailUrl: json.image } : {})),
           renderLargerThumbnail: true,
-          sourceUrl: text
+          sourceUrl: (text && text.startsWith('http')) ? text : (info?.spotify_url || '')
         }
       }
-    }, { quoted: fkontak })
+    }, { quoted: m })
 
   } catch (e) {
-    console.error(e)
+    console.error("Error en handler music:", e)
     m.reply("`❌ Error al procesar la descarga de Spotify.`")
   }
 }
