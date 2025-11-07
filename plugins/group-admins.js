@@ -1,8 +1,4 @@
 const handler = async (m, { conn, participants, groupMetadata, args }) => {
-  const chat = global.db.data.chats[m.chat]
-  const primaryBot = chat?.primaryBot
-
-  if (primaryBot && conn.user.jid !== primaryBot) return
 
   const pp = await conn.profilePictureUrl(m.chat, 'image').catch(_ => 'https://files.catbox.moe/xr2m6u.jpg')
 
