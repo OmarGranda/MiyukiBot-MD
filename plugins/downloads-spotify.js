@@ -2,28 +2,22 @@ import axios from 'axios'
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, `🎋 *Por favor proporciona el nombre de la canción.*`, m)
+  if (!text) return conn.reply(m.chat, `🎋 *Por favor proporciona el nombre de una canción.*`, m)
 
   try {
-
-    // 🔍 Buscar canción
+    // Buscar canción
     let search = await axios.get(`https://api.delirius.store/search/spotify?q=${encodeURIComponent(text)}&limit=1`)
     if (!search.data?.status || !search.data.data?.length) throw 'No encontrado'
 
     let result = search.data.data[0]
-    let { title, artist, album, duration, popularity, publish, url, image } = result
+    let { title, artist, album, duration, publish, url, image } = result
 
-    // 📝 Info previa
+    // Avisar al usuario
     await conn.sendMessage(m.chat, {
-      text: `「✦」Descargando *<${title}>*\n\n` +
-        `> ꕥ Autor » *${artist}*\n` +
-        (album ? `> ❑ Álbum » *${album}*\n` : '') +
-        (duration ? `> ⴵ Duración » *${duration}*\n` : '') +
-        (publish ? `> ☁︎ Publicado » *${publish}*\n` : '') +
-        `> 🜸 Enlace » ${url}`,
+      text: `「✦」Preparando descarga...\n\n> 🎵 *${title}*\n> 👤 *${artist}*`,
       contextInfo: {
         externalAdReply: {
-          title: '🎧 sᴘᴏᴛɪғʏ ᴍᴜsɪᴄ',
+          title: title,
           body: artist,
           thumbnailUrl: image,
           sourceUrl: url,
@@ -33,19 +27,30 @@ let handler = async (m, { conn, text }) => {
       }
     }, { quoted: m })
 
-    // 🎶 Descargar audio real
-    let dl = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(url)}`)
-    let js = await dl.json()
+    let audioUrl = null
 
-    if (!js.data?.url) return conn.reply(m.chat, `⚠️ No se pudo obtener el audio.`, m)
+    // 1) Intentar descarga normal
+    try {
+      let dl = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(url)}`)
+      let js = await dl.json()
+      if (js?.data?.url) audioUrl = js.data.url
+    } catch { }
 
-    let audioUrl = js.data.url
+    // 2) Si falla → intentar con servidor de respaldo
+    if (!audioUrl) {
+      try {
+        let backup = await fetch(`https://spotifydl.fly.dev/download?url=${encodeURIComponent(url)}`)
+        let js2 = await backup.json()
+        if (js2?.downloadUrl) audioUrl = js2.downloadUrl
+      } catch { }
+    }
 
-    // Descargar archivo a buffer
+    if (!audioUrl) return conn.reply(m.chat, `⚠️ No pude descargar esta canción. Intenta con otro nombre.`, m)
+
     let audio = await fetch(audioUrl)
     let buffer = await audio.buffer()
 
-    // 🎧 Enviar audio
+    // Enviar archivo
     await conn.sendMessage(m.chat, {
       audio: buffer,
       mimetype: "audio/mpeg",
@@ -53,7 +58,7 @@ let handler = async (m, { conn, text }) => {
       contextInfo: {
         externalAdReply: {
           title: title,
-          body: `${artist} • ${duration || "?"}`,
+          body: `${artist} • ${duration || ""}`,
           thumbnailUrl: image,
           renderLargerThumbnail: true,
           sourceUrl: url
@@ -63,7 +68,7 @@ let handler = async (m, { conn, text }) => {
 
   } catch (e) {
     console.log("ERROR SPOTIFY:", e)
-    return conn.reply(m.chat, `❌ *Error al buscar o descargar la canción.*\nVuelve a intentarlo.`, m)
+    conn.reply(m.chat, `❌ *Error al buscar o descargar la canción.*`, m)
   }
 }
 
