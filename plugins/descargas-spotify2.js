@@ -10,12 +10,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     let info = null
     let json = null
 
+    // --- 1) Si es link directo a track en Spotify: intentar descargar por delirius ---
     if (text.includes("spotify.com/track")) {
       const url1 = `https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(text)}`
-      const res1 = await fetch(url1)
-      if (!res1.ok) throw await res1.text()
-      const j1 = await res1.json()
-      if (!j1 || !j1.data || !j1.data.url) throw "No pude obtener la descarga"
+      const res1 = await fetch(url1, { timeout: 20000 }).catch(err => { throw new Error('fetch delirius failed: ' + err.message) })
+      if (!res1.ok) {
+        const txt = await res1.text().catch(() => '')
+        throw new Error('delirius responded with status ' + res1.status + ' ' + txt)
+      }
+      const j1 = await res1.json().catch(() => null)
+      if (!j1 || !j1.data || !j1.data.url) throw new Error("No pude obtener la descarga desde delirius")
 
       json = {
         title: j1.data.title,
@@ -25,28 +29,30 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         url: j1.data.url
       }
 
+      // intentar ampliar info por yupra
       const query = encodeURIComponent((j1.data.title || '') + " " + (j1.data.author || ''))
-      const resInfo = await fetch(`https://api.yupra.my.id/api/search/spotify?q=${query}`)
-      if (resInfo.ok) {
-        const jInfo = await resInfo.json()
-        info = jInfo.result?.[0] || null
+      const resInfo = await fetch(`https://api.yupra.my.id/api/search/spotify?q=${query}`).catch(() => null)
+      if (resInfo && resInfo.ok) {
+        const jInfo = await resInfo.json().catch(() => null)
+        info = jInfo?.result?.[0] || null
       }
 
+    // --- 2) Si envían texto (nombre): buscar en yupra, obtener preview y usar delirius ---
     } else {
-      const resSearch = await fetch(`https://api.yupra.my.id/api/search/spotify?q=${encodeURIComponent(text)}`)
-      if (!resSearch.ok) throw await resSearch.text()
-      const jSearch = await resSearch.json()
-      if (!jSearch.result || !jSearch.result[0]) throw "No encontré resultados"
+      const resSearch = await fetch(`https://api.yupra.my.id/api/search/spotify?q=${encodeURIComponent(text)}`, { timeout: 20000 }).catch(err => { throw new Error('fetch yupra failed: ' + err.message) })
+      if (!resSearch || !resSearch.ok) throw new Error('Error buscando en yupra')
+      const jSearch = await resSearch.json().catch(() => null)
+      if (!jSearch?.result || !jSearch.result[0]) throw new Error("No encontré resultados en Spotify")
 
       info = jSearch.result[0]
 
       const previewUrl = info.spotify_preview
-      if (!previewUrl) throw "No hay preview disponible para descarga"
+      if (!previewUrl) throw new Error("No hay preview disponible para descarga desde Spotify")
 
-      const resDl = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(previewUrl)}`)
-      if (!resDl.ok) throw await resDl.text()
-      const jDl = await resDl.json()
-      if (!jDl || !jDl.data || !jDl.data.url) throw "No pude obtener la descarga"
+      const resDl = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(previewUrl)}`, { timeout: 20000 }).catch(() => null)
+      if (!resDl || !resDl.ok) throw new Error("delirius no respondió la descarga del preview")
+      const jDl = await resDl.json().catch(() => null)
+      if (!jDl?.data?.url) throw new Error("No pude obtener la descarga desde delirius (preview)")
 
       json = {
         title: jDl.data.title,
@@ -59,15 +65,12 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const name = json.title || "Desconocido"
     const author = json.author || "Desconocido"
-    const download = json.url
+    let download = json.url
     const durationRaw = json.duration || 0
 
-    // Normaliza duración: puede venir en ms o s. Si es razonablemente pequeño lo tomamos como segundos.
+    // Normaliza duración (ms o s)
     let durationMs = Number(durationRaw) || 0
-    if (durationMs > 0 && durationMs < 1000 * 60 * 60 && durationMs < 10000) {
-      // parece ser segundos -> convertir a ms
-      durationMs = durationMs * 1000
-    }
+    if (durationMs > 0 && durationMs < 10000) durationMs = durationMs * 1000 // segundos -> ms
     const toMMSS = (ms) => {
       if (!ms || ms <= 0) return "Desconocido"
       const total = Math.floor(ms / 1000)
@@ -88,22 +91,92 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 👤 Artista: ${author}
 ⏱️ Duración: ${duration}\`\`\`${moreInfo}`
 
-    // preparar miniatura (buffer)
+    // preparar miniatura (buffer). Si falla, dejamos thumb null.
     let thumb = null
     if (json.image) {
       try {
+        // Primera opción: Jimp puede leer la URL directa
         const img = await Jimp.read(json.image)
-        img.cover(300, 300) // recorta/ajusta a 300x300
+        img.cover(300, 300)
         thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
       } catch (err) {
-        console.log("⚠️ Error al procesar miniatura:", err)
-        thumb = null
+        console.log("⚠️ Jimp fallo al procesar la imagen:", err.message || err)
+        // Intentar descargar el image y obtener buffer directo
+        try {
+          const imgRes = await fetch(json.image)
+          if (imgRes.ok) {
+            const imgBuf = await imgRes.buffer()
+            // opcional: volver a procesar con Jimp para asegurar JPEG
+            try {
+              const img2 = await Jimp.read(imgBuf)
+              img2.cover(300, 300)
+              thumb = await img2.getBufferAsync(Jimp.MIME_JPEG)
+            } catch {
+              thumb = imgBuf // usar buffer tal cual si Jimp vuelve a fallar
+            }
+          }
+        } catch (e) {
+          console.log("⚠️ No se pudo obtener miniatura alternativa:", e.message || e)
+          thumb = null
+        }
       }
     }
 
-    // enviar como documento (archivo mp3 descargable)
+    // --- Intentar descargar el audio como buffer (más fiable que enviar solo la URL) ---
+    let audioBuffer = null
+    if (download) {
+      try {
+        const ares = await fetch(download, { timeout: 40000 })
+        if (!ares.ok) throw new Error('Audio URL responded ' + ares.status)
+        audioBuffer = await ares.buffer()
+        // si el buffer es muy pequeño, tratarlo como fallo
+        if (!audioBuffer || audioBuffer.length < 1000) {
+          console.log('⚠️ Buffer de audio demasiado pequeño, fallback a YouTube')
+          audioBuffer = null
+        }
+      } catch (err) {
+        console.log('⚠️ Error descargando audio desde download url:', err.message || err)
+        audioBuffer = null
+      }
+    }
+
+    // --- Fallback: si no hay audioBuffer, intentar descargar desde YouTube (delirius ytmusic) ---
+    if (!audioBuffer) {
+      try {
+        console.log('ℹ️ Intentando fallback a YouTube (ytmusic search)...')
+        const q = encodeURIComponent(`${name} ${author}`)
+        const ytSearchRes = await fetch(`https://api.delirius.store/search/ytmusic?q=${q}&limit=1`, { timeout: 20000 })
+        if (ytSearchRes && ytSearchRes.ok) {
+          const jyt = await ytSearchRes.json().catch(() => null)
+          const vid = jyt?.data?.[0]?.videoId || jyt?.data?.[0]?.id || null
+          if (vid) {
+            const dl = await fetch(`https://api.delirius.store/download/ytmp3?videoId=${encodeURIComponent(vid)}`, { timeout: 40000 })
+            if (dl && dl.ok) {
+              const jdl = await dl.json().catch(() => null)
+              const yurl = jdl?.data?.url || jdl?.data?.downloadUrl || null
+              if (yurl) {
+                const audioRes = await fetch(yurl, { timeout: 40000 })
+                if (audioRes && audioRes.ok) {
+                  audioBuffer = await audioRes.buffer()
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('⚠️ Fallback YouTube falló:', err.message || err)
+        audioBuffer = null
+      }
+    }
+
+    if (!audioBuffer) {
+      console.error('ERROR: No se pudo obtener audio (ni de Spotify ni de fallback YouTube).')
+      return m.reply('`❌ Error al procesar la descarga de Spotify. (no se pudo obtener el audio)`')
+    }
+
+    // Enviar como documento descargable (mp3)
     await conn.sendMessage(m.chat, {
-      document: { url: download },
+      document: audioBuffer,
       mimetype: 'audio/mpeg',
       fileName: `${name}.mp3`,
       caption: caption,
@@ -113,7 +186,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
           title: name,
           body: `👤 ${author} • ⏱️ ${duration}`,
           mediaType: 2,
-          // si tenemos buffer lo usamos como thumbnail directo
           ...(thumb ? { thumbnail: thumb } : (json.image ? { thumbnailUrl: json.image } : {})),
           renderLargerThumbnail: true,
           sourceUrl: (text && text.startsWith('http')) ? text : (info?.spotify_url || '')
@@ -121,9 +193,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     }, { quoted: m })
 
-    // enviar también como audio (reproducción rápida en el chat)
+    // Enviar también como audio (reproducción)
     await conn.sendMessage(m.chat, {
-      audio: { url: download },
+      audio: audioBuffer,
       mimetype: 'audio/mpeg',
       fileName: `${name}.mp3`,
       ...(thumb ? { jpegThumbnail: thumb } : {}),
@@ -140,8 +212,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }, { quoted: m })
 
   } catch (e) {
-    console.error("Error en handler music:", e)
-    m.reply("`❌ Error al procesar la descarga de Spotify.`")
+    console.error("Error en handler music:", e && (e.stack || e.message || e))
+    // Mostrar mensaje más explícito al usuario para ayudar a depurar
+    let msg = '`❌ Error al procesar la descarga de Spotify.`'
+    if (e && e.message) msg += `\n\`\`\`${e.message}\`\`\``
+    m.reply(msg)
   }
 }
 
