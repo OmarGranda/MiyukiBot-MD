@@ -43,6 +43,7 @@ global.dev = "© Powered By OmarGranda"
 global.author = "Omar Granda"
 global.etiqueta = "OmarGranda"
 global.currency = "¥enes"
+global.banner = 'https://qu.ax/NMOTS.jpg'
 global.catalogo = fs.readFileSync('./lib/catalogo.jpg')
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*

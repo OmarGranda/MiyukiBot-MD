@@ -78,7 +78,7 @@ export async function before(m, { conn }) {
   ];
 
   const texto = mensajesNoEncontrado[Math.floor(Math.random() * mensajesNoEncontrado.length)];
-  const thumb = icono;
+  const thumb = banner;
 
   await conn.sendMessage(m.chat, {
     text: texto,
