@@ -10,14 +10,13 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
   try {
 
-    // Buscar canción (API funcional)
-    let search = await fetch(`https://api.delirius.store/search/spotify?q=${encodeURIComponent(text)}&limit=1`)
-    let sjson = await search.json()
+    // Buscar canción en Spotify
+    const search = await fetch(`https://api.delirius.store/search/spotify?q=${encodeURIComponent(text)}&limit=1`)
+    const sjson = await search.json()
 
-    if (!sjson.status || !sjson.data || !sjson.data[0]) throw "No encontré resultados en Spotify"
+    if (!sjson.status || !sjson.data || !sjson.data[0]) throw "No encontré resultados en Spotify."
 
-    let track = sjson.data[0]
-
+    const track = sjson.data[0]
     const title = track.name
     const artist = track.artist
     const image = track.image
@@ -25,45 +24,35 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const durationMs = track.duration_ms || 0
 
     const toMMSS = (ms) => {
-      if (ms <= 0) return "Desconocido"
+      if (!ms || ms <= 0) return "Desconocido"
       const total = Math.floor(ms / 1000)
       const min = Math.floor(total / 60)
       const sec = total % 60
-      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+      return `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
     }
     const duration = toMMSS(durationMs)
 
     await conn.sendMessage(m.chat, { react: { text: '🎧', key: m.key } })
 
-    // Intentar descargar audio desde distintos servidores
+    // MÉTODO 1 (principal)
     let downloadUrl = null
-
-    // Método 1
     try {
-      let dl = await axios.get(`https://api.nekolabs.my.id/downloader/spotify/v1?url=${encodeURIComponent(spotifyUrl)}`)
-      downloadUrl = dl?.data?.result?.downloadUrl
+      const dl1 = await fetch(`https://api.delirius.store/download/spotifydl?url=${encodeURIComponent(spotifyUrl)}`)
+      const j1 = await dl1.json()
+      if (j1?.data?.url) downloadUrl = j1.data.url
     } catch {}
 
-    // Método 2 (fallback)
+    // MÉTODO 2 (fallback)
     if (!downloadUrl) {
       try {
-        let dl = await axios.get(`https://api.sylphy.xyz/download/spotify?url=${encodeURIComponent(spotifyUrl)}&apikey=sylphy-c519`)
-        downloadUrl = dl?.data?.data?.dl_url
+        const dl2 = await axios.get(`https://api.soraapi.xyz/api/spotifyDL?url=${encodeURIComponent(spotifyUrl)}`)
+        if (dl2?.data?.result?.download_url) downloadUrl = dl2.data.result.download_url
       } catch {}
     }
 
-    // Método 3 (última opción)
-    if (!downloadUrl) {
-      try {
-        let dl = await fetch(`https://api.neoxr.eu/api/spotify?url=${encodeURIComponent(spotifyUrl)}&apikey=russellxz`)
-        let j = await dl.json()
-        downloadUrl = j?.data?.url
-      } catch {}
-    }
+    if (!downloadUrl) throw "No se pudo obtener un link de descarga válido 😿"
 
-    if (!downloadUrl) throw "No se pudo descargar la canción (todos los servidores fallaron)"
-
-    // Convertir miniatura
+    // Miniatura
     let thumb = null
     try {
       const img = await Jimp.read(image)
@@ -71,11 +60,11 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       thumb = await img.getBufferAsync(Jimp.MIME_JPEG)
     } catch {}
 
-    let caption = `\`\`\`🎶 Título: ${title}
+    const caption = `\`\`\`🎶 Título: ${title}
 👤 Artista: ${artist}
 ⏱️ Duración: ${duration}\`\`\``
 
-    // Enviar el archivo como audio reproducible
+    // Enviar audio
     await conn.sendMessage(m.chat, {
       audio: { url: downloadUrl },
       mimetype: 'audio/mpeg',
