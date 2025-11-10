@@ -330,7 +330,7 @@ const [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find] = test;
 const s = global.support = {ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find};
 Object.freeze(global.support);
 }
-// Tmp
+// 🌿 Tmp
 setInterval(async () => {
 const tmpDir = join(__dirname, 'tmp')
 try {
