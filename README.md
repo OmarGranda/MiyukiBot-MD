@@ -198,6 +198,23 @@ npm start
 
 ### COLABORADOR 🤝
 
-[![Yuji-XDev 𓆩⚡ ✞ 𝑺𝒉𝒂𝒅𝒐𝒘 𝒐𝒇𝒇𝒊𝒄𝒊𝒂𝒍 🍧𓆪](https://avatars.githubusercontent.com/u/196103894?v=4)]()
+<div align="center">
 
->  **[✞ 𝚂𝚑𝚊𝚍𝚘𝚠_𝚡𝚢𝚣 🔥](https://github.com/Yuji-XDev)**
+<table>
+<tr>
+<td align="center" width="180">
+  <img src="https://avatars.githubusercontent.com/u/196103894?v=4" width="150" style="border-radius: 20px;" alt="Shadow-nex Avatar">
+</td>
+<td align="left" style="padding-left: 20px; vertical-align: middle;">
+
+<h2>ׅ  ׄ 몽 ۪  <b>Shadow.xyz</b> ꩒ᰫ</h2>
+
+<p><a href="https://github.com/Shadow-nex" target="_blank">
+  🔗 <b>github.com/Shadow-nex</b>
+</a></p>
+<p>💀 Desarrollador — creando herramientas y bots de la nueva era.</p>
+</td>
+</tr>
+</table>
+
+</div>
