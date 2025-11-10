@@ -210,9 +210,9 @@ npm start
 <h2>ׅ  ׄ 몽 ۪  <b>Shadow.xyz</b> ꩒ᰫ</h2>
 
 <p><a href="https://github.com/Shadow-nex" target="_blank">
-  🔗 <b>github.com/Shadow-nex</b>
+  🪴  <b>github.com/Shadow-nex</b>
 </a></p>
-<p>💀 Desarrollador — creando herramientas y bots de la nueva era.</p>
+<p>🌿 dev.shadow xD 🦌</p>
 </td>
 </tr>
 </table>
