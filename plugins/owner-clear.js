@@ -2,8 +2,8 @@ import { readdirSync, unlinkSync, existsSync, promises as fs, statSync } from 'f
 import { tmpdir } from 'os'
 import path, { join } from 'path'
 
-const handler = async (m, { conn, __dirname, command, usedPrefix, isROwner, isMods }) => {
-if (!isMods) return
+const handler = async (m, { conn, __dirname, command, usedPrefix, isROwner }) => {
+if (!isROwner) return
 try {
 switch (command) {
 case 'delai': case 'dsowner': {
