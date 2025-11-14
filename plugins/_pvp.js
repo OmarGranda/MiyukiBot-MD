@@ -3,7 +3,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     let user = global.db.data.users[m.sender]
     if (!user) return m.reply("❗ Tu usuario no existe en la base de datos.")
 
-    // Cooldown de 7 segundos
     if (!global.battleCD) global.battleCD = {}
     let now = Date.now()
     let wait = 7000
