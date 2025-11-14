@@ -68,7 +68,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         u.health += 40
         if (u.health > 100) u.health = 100
       } catch { }
-    }, 300000) // 5 minutos = 300k ms
+    }, 300000) // 5 minutos
 
     let txt = `⚔️ *B A T A L L A* ⚔️
 
