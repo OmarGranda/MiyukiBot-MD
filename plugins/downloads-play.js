@@ -24,18 +24,21 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     if (seconds > 60000) throw '🚫 *El video supera el límite de duración (10 minutos).*'
 
     const vistas = formatViews(views)
-    const info = `
-🎧 *YOUTUBE PLAYER* 🎬
+    const info = `🎅🏻🔔 𝙔𝙤𝙪𝙏𝙪𝙗𝙚 𝙋𝙡𝙖𝙮𝙚𝙧 — ❄️ 𝙎𝙥𝙚𝙘𝙞𝙖𝙡 𝙉𝙖𝙫𝙞𝙙𝙖𝙙 ❄️
 
-📀 *Título:* ${title}
-📺 *Canal:* ${author.name}
-👁️‍🗨️ *Vistas:* ${vistas}
-⏱️ *Duración:* ${timestamp}
-🗓️ *Publicado:* ${ago}
-🔗 *Enlace:* ${url}`
+┏━━━━━━━━🎄━━━━━━━━┓
+┃ 📀 *Título:* ${title}
+┃ 📺 *Canal:* ${author.name}
+┃ 👁️ *Vistas:* ${vistas}
+┃ ⏱️ *Duración:* ${timestamp}
+┃ 🗓️ *Publicado:* ${ago}
+┃ 🔗 *Enlace:* ${url}
+┗━━━━━━━━🎁━━━━━━━━┛
+
+✨🎶 Que este temón te saque el espíritu navideño aunque no quieras uwu 😎🌟`
 
     const thumb = (await conn.getFile(thumbnail)).data
-    await conn.sendMessage(m.chat, { image: thumb, caption: info }, { quoted: fkontak })
+    await conn.sendMessage(m.chat, { image: thumb, caption: info, ...fake }, { quoted: fkontak })
 
     if (['play', 'mp3'].includes(command)) {
       await m.react('🎶')
