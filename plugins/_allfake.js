@@ -59,8 +59,8 @@ handler.all = async function (m) {
 
 ┃📅 *Fecha:* ${fecha}
 ┃🕒 *Hora:* ${tiempo}
-0q`
-Ñ1    global.fkontak = {
+`
+    global.fkontak = {
         key: {
             participants: "0@s.whatsapp.net",
             remoteJid: "status@broadcast",
