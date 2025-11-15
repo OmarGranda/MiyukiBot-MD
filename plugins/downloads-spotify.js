@@ -55,7 +55,6 @@ let handler = async (m, { conn, text }) => {
     let audio = await fetch(dlUrl)
     let buffer = await audio.buffer()
 
-    // --- ENVIAR ARCHIVO ---
     await conn.sendMessage(
       m.chat,
       {
