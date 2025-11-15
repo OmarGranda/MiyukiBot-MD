@@ -31,18 +31,67 @@ const { CONNECTING } = ws
 const { chain } = lodash
 const PORT = process.env.PORT || process.env.SERVER_PORT || 3000
 
-let { say } = cfonts
-console.log(chalk.magentaBright('\n❀ Iniciando...'))
+import chalk from 'chalk'
+import { say } from 'cfonts'
+import os from 'os'
+import moment from 'moment'
+import gradient from 'gradient-string'
+import ora from 'ora'
+
+// === EFECTO DE CARGA ===
+const spinner = ora({
+    text: chalk.cyan('Iniciando módulos...'),
+    spinner: 'dots'
+}).start()
+
+setTimeout(() => {
+    spinner.succeed(chalk.green('Módulos cargados.'))
+}, 1500)
+
+console.log(chalk.magentaBright('\n❀ Iniciando MiyukiBot-MD...\n'))
+
+// === BANNER PRINCIPAL ===
 say('MiyukiBot-MD', {
-font: 'simple',
-align: 'left',
-gradient: ['green', 'white']
+    font: 'simple',
+    align: 'left',
+    gradient: ['green', 'white']
 })
+
 say('Powered By OmarGranda', {
-font: 'console',
-align: 'center',
-colors: ['cyan', 'magenta', 'yellow']
+    font: 'console',
+    align: 'center',
+    colors: ['cyan', 'magenta', 'yellow']
 })
+
+// === BANNER EXTRA OPCIONAL ===
+say('Bot - Multi Device', {
+    font: 'tiny',
+    align: 'center',
+    gradient: ['cyan', 'pink']
+})
+
+// === INFO DEL SISTEMA ===
+console.log(gradient(['cyan', 'magenta']).multiline(`
+▰▰▰▰▰▰▰  SISTEMA DEL BOT ▰▰▰▰▰▰▰
+🖥  Plataforma : ${os.platform()}
+⚙️  CPU        : ${os.cpus()[0].model}
+💾  RAM Total  : ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB
+📅  Iniciado   : ${moment().format('DD/MM/YYYY HH:mm:ss')}
+▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
+`))
+
+// === ANIMACIÓN DE ESTADO ===
+const statusSpinner = ora({
+    text: chalk.yellow('Esperando conexión con WhatsApp...'),
+    spinner: 'bouncingBar'
+})
+statusSpinner.start()
+
+setTimeout(() => {
+    statusSpinner.succeed(chalk.green('Conectado exitosamente.'))
+}, 3000)
+
+// === TUS FUNCIONES ===
 protoType()
 serialize()
 
