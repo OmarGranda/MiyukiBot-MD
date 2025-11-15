@@ -2,7 +2,7 @@
 > **Este proyecto está en constante evolución. Estamos comprometidos en ofrecer a nuestra comunidad un Bot increíble. Te invitamos a instalarlo y para estar al tanto de todas las novedades.**
 
 <p align="center"> 
-  <a href="https://github.com/OmarGranda"><img src="https://readme-typing-svg.herokuapp.com?font=Boldonse&size=20&duration=3000&pause=1000&color=FFC0CB&center=true&width=435&lines=MiyukiBot-MD;%C2%A1El+mejor+bot+de+WhatsApp!" height="500px"></a> 
+  <a href="https://github.com/OmarGranda"><img src="https://readme-typing-svg.herokuapp.com?font=Boldonse&size=20&duration=3000&pause=1000&color=FFC0CB&center=true&width=435&lines=SakuraBot-MD;%C2%A1El+mejor+bot+de+WhatsApp!" height="500px"></a> 
 <img src="https://qu.ax/jLjVB.jpg" width="500" height="500" />
 
 <a href="https://wa.me/51927303598">
@@ -108,7 +108,7 @@ pkg install git nodejs ffmpeg imagemagick yarn -y
 ```
 
 ```bash
-git clone https://github.com/OmarGranda/MiyukiBot-MD && cd MiyukiBot-MD
+git clone https://github.com/OmarGranda/SakuraBot-MD && cd SakuraBot-MD
 ```
 
 ```bash
@@ -136,7 +136,7 @@ npm start
 1️⃣ Abre Termux y navega al directorio del bot:
    
 ```bash
-cd MiyukiBot-MD
+CD SakuraBot-MD
 ```
 
 2️⃣ Inicia el bot nuevamente:
@@ -155,7 +155,7 @@ npm start
 1️⃣ Abre Termux y navega al directorio del bot:
 
 ```bash
-cd MiyukiBot-MD
+cd SakuraBot-MD
 ```
 
 2️⃣ Elimina la carpeta MiniSession:
@@ -178,11 +178,11 @@ npm start
 > Copia y pega dentro de termux
   
 ```bash
- grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/OmarGranda/MiyukiBot-MD-Bot/main/update.sh | bash
+ grep -q 'bash\|wget' <(dpkg -l) || apt install -y bash wget && wget -O - https://raw.githubusercontent.com/OmarGranda/SakuraBot-MD-Bot/main/update.sh | bash
 ```
 </details>
 
-### ☁️ ACTIVAR MIYUKIBOT-MD 24/7 EN X-HOST
+### ☁️ Activar SAKURABOT-MD 24/7 EN X-HOST
 
 <a><img src="https://qu.ax/AUQhM.jpg" height="200"></a>
 
@@ -194,7 +194,7 @@ npm start
 ### DUEÑO Y EDITOR DEL BOT 👑
 [![Omar Granda](https://avatars.githubusercontent.com/u/230871778?v=4)]()
 
-> Copyright (c) 2025 **[OmarGranda](https://github.com/OmarGranda/MiyukiBot-MD/blob/main/LICENSE)**
+> Copyright (c) 2025 **[OmarGranda](https://github.com/OmarGranda/SakuraBot-MD/blob/main/LICENSE)**
 
 ### COLABORADOR 🤝
 
