@@ -23,7 +23,7 @@ import store from './lib/store.js'
 const { proto } = (await import('@whiskeysockets/baileys')).default
 import pkg from 'google-libphonenumber'
 const { PhoneNumberUtil } = pkg
-const phoneUtil = PhoneNumberUtil.getInstance()
+const phoneUtil = 1PhoneNumberUtil.getInstance()
 const { DisconnectReason, useMultiFileAuthState, MessageRetryMap, fetchLatestBaileysVersion, makeCacheableSignalKeyStore, jidNormalizedUser } = await import('@whiskeysockets/baileys')
 import readline, { createInterface } from 'readline'
 import NodeCache from 'node-cache'
@@ -38,60 +38,18 @@ import moment from 'moment'
 import gradient from 'gradient-string'
 import ora from 'ora'
 
-// === EFECTO DE CARGA ===
-const spinner = ora({
-    text: chalk.cyan('Iniciando módulos...'),
-    spinner: 'dots'
-}).start()
-
-setTimeout(() => {
-    spinner.succeed(chalk.green('Módulos cargados.'))
-}, 1500)
-
-console.log(chalk.magentaBright('\n❀ Iniciando MiyukiBot-MD...\n'))
-
-// === BANNER PRINCIPAL ===
+let { say } = cfonts
+console.log(chalk.magentaBright('\n❀ Iniciando...'))
 say('MiyukiBot-MD', {
-    font: 'simple',
-    align: 'left',
-    gradient: ['green', 'white']
+font: 'simple',
+align: 'left',
+gradient: ['green', 'white']
 })
-
 say('Powered By OmarGranda', {
-    font: 'console',
-    align: 'center',
-    colors: ['cyan', 'magenta', 'yellow']
+font: 'console',
+align: 'center',
+colors: ['cyan', 'magenta', 'yellow']
 })
-
-// === BANNER EXTRA OPCIONAL ===
-say('Bot - Multi Device', {
-    font: 'tiny',
-    align: 'center',
-    gradient: ['cyan', 'pink']
-})
-
-// === INFO DEL SISTEMA ===
-console.log(gradient(['cyan', 'magenta']).multiline(`
-▰▰▰▰▰▰▰  SISTEMA DEL BOT ▰▰▰▰▰▰▰
-🖥  Plataforma : ${os.platform()}
-⚙️  CPU        : ${os.cpus()[0].model}
-💾  RAM Total  : ${(os.totalmem() / 1024 / 1024 / 1024).toFixed(2)} GB
-📅  Iniciado   : ${moment().format('DD/MM/YYYY HH:mm:ss')}
-▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰
-`))
-
-// === ANIMACIÓN DE ESTADO ===
-const statusSpinner = ora({
-    text: chalk.yellow('Esperando conexión con WhatsApp...'),
-    spinner: 'bouncingBar'
-})
-statusSpinner.start()
-
-setTimeout(() => {
-    statusSpinner.succeed(chalk.green('Conectado exitosamente.'))
-}, 3000)
-
-// === TUS FUNCIONES ===
 protoType()
 serialize()
 
