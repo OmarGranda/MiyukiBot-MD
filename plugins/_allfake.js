@@ -5,12 +5,18 @@ import axios from 'axios'
 import moment from 'moment-timezone'
 const { generateWAMessageFromContent, prepareWAMessageMedia, proto } = pkg
 
+// ==========================================================
+// Handler principal
+// ==========================================================
 var handler = m => m
 
 handler.all = async function (m) {
 
-    global.botname = "MiyukiBot-MD 🌸"
-    global.dev = "By OmarGranda"
+    // ============================
+    // Variables globales necesarias
+    // ============================
+    global.botname = global.botname || "MiyukiBot-MD 🌸"
+    global.dev = global.dev || "By OmarGranda"
 
     global.canalIdM = [
         "120363422169517881@newsletter",
@@ -24,6 +30,9 @@ handler.all = async function (m) {
 
     global.channelRD = await getRandomChannel()
 
+    // ============================
+    // Fecha y hora
+    // ============================
     global.d = new Date(new Date() + 3600000)
     global.locale = 'es'
 
@@ -33,6 +42,9 @@ handler.all = async function (m) {
     global.año = d.toLocaleDateString('es', { year: 'numeric' })
     global.tiempo = moment.tz('America/Caracas').format('HH:mm:ss')
 
+    // ============================
+    // Links y redes sociales
+    // ============================
     var canal = 'https://whatsapp.com/channel/0029Vb6wMPa8kyyTpjBG9C2H'
     var comunidad = 'https://whatsapp.com/channel/0029Vb6wMPa8kyyTpjBG9C2H'
     var git = 'https://github.com/OmarGranda'
@@ -41,25 +53,28 @@ handler.all = async function (m) {
 
     global.redes = pickRandom([canal, comunidad, git, github, correo])
 
+    // ============================
+    // Datos del usuario
+    // ============================
     global.nombre = m.pushName || 'Anónimo'
 
     // ============================
-    // ⭐ Metadatos estilo la imagen enviada
+    // Stickers pack info
     // ============================
     global.packsticker = 
-`┃ MiyukiBot-MD 🌸
-↳ https://github.com/MiyukiBot-MD
+`°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
+👤 Usuario: ${nombre}
+👑 Bot: ${botname}
+📆 Fecha: ${fecha}
+🕒 Hora: ${moment.tz('America/Caracas').format('HH:mm:ss')}`
 
-┃🧑‍💻 Info:
-↳ https://github.com/OmarGranda/MiyukiBot-MD
-   👑 Dev: OmarGranda
+    global.packsticker2 = 
+`\n°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
+${dev}`
 
-┃👑 *Usuario:*
-↳ ${nombre}
-
-┃📅 *Fecha:* ${fecha}
-┃🕒 *Hora:* ${tiempo}
-`
+    // ============================
+    // Contacto Fake
+    // ============================
     global.fkontak = {
         key: {
             participants: "0@s.whatsapp.net",
@@ -80,6 +95,9 @@ END:VCARD`
         }
     }
 
+    // ============================
+    // Fake Replicated Channel
+    // ============================
     global.icono = pickRandom([
         'https://qu.ax/FKJLs.jpg',
         'https://qu.ax/NMOTS.jpg',
@@ -106,15 +124,22 @@ END:VCARD`
             }
         }
     }
+
 }
 
 export default handler
 
+// ==========================================================
+// Funciones adicionales
+// ==========================================================
 function pickRandom(list) {
     return list[Math.floor(Math.random() * list.length)]
 }
 
 async function getRandomChannel() {
     let index = Math.floor(Math.random() * canalIdM.length)
-    return { id: canalIdM[index], name: canalNombreM[index] }
+    return {
+        id: canalIdM[index],
+        name: canalNombreM[index]
+    }
 }
