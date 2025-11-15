@@ -16,7 +16,7 @@ handler.all = async function (m) {
     // Variables globales necesarias
     // ============================
     global.botname = global.botname || "MiyukiBot-MD 🌸"
-    global.dev = global.dev || "© Powered by OmarGranda"
+    global.dev = global.dev || "© Created By OmarGranda"
 
     global.canalIdM = [
         "120363422169517881@newsletter",
