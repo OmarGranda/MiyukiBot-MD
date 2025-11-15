@@ -2,81 +2,64 @@ import axios from 'axios'
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, `🎋 *Por favor proporciona el nombre de una canción.*`, m)
+  if (!text) return conn.reply(m.chat, `🎋 *Por favor, proporciona el nombre de una canción o artista.*`, m, fake)
 
   try {
-    let search = await axios.get(`https://api.delirius.store/search/spotify?q=${encodeURIComponent(text)}&limit=1`)
-    if (!search.data?.status || !search.data.data?.length) throw 'No encontrado'
+  const searchUrl = `${global.APIs.delirius.url}/search/spotify?q=${encodeURIComponent(text)}&limit=1`
+    const search = await axios.get(searchUrl, { timeout: 15000 })
 
-    let result = search.data.data[0]
-    let { title, artist, album, duration, publish, popularity, url, image } = result
+    if (!search.data?.status || search.data.data.length === 0)
+      return conn.reply(m.chat, `⚠️ No encontré resultados para *${text}*`, m)
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        text: `「✦」Buscando y preparando descarga...\n\n` +
-              `🍀 *${title}*\n` +
-              `👤 *${artist}*\n` +
-              `💽 *Álbum:* ${album}\n` +
-              `⏱️ *Duración:* ${duration}\n` +
-              `📅 *Lanzamiento:* ${publish}\n` +
-              `🔥 *Popularidad:* ${popularity}`,
-        contextInfo: {
-          externalAdReply: {
-            title: title,
-            body: artist,
-            thumbnailUrl: image,
-            mediaType: 1,
-            renderLargerThumbnail: true,
-            sourceUrl: url
-          }
-        }
-      },
-      { quoted: m }
-    )
+    const song = search.data.data[0]
+    const { title, artist, album, duration, popularity, publish, url: spotifyUrl, image } = song
 
-    const apiKey = "IUHp9S4ExrywBB35"
-    const base = "https://api-nv.ultraplus.click"
+    const caption =
+`💽 Título: *${title}*
+👤 Artista: *${artist}*
+🎧 Álbum: *${album || "Desconocido"}*
+⏱️ Duración: *${duration || "N/A"}*
+📅 Publicado: *${publish || "N/A"}*
+🔥 Popularidad: *${popularity || "N/A"}*
+🔗 link: ${spotifyUrl}`
 
-    const u = new URL("/api/download/spotify", base)
-    u.search = new URLSearchParams({
-      url: url,
-      key: apiKey
+    await conn.sendMessage(m.chat, {
+      image: { url: image },
+      caption: caption
+    }, { quoted: m })
+
+
+    const base = 'https://api-nv.ultraplus.click'
+    const api = new URL('/api/download/spotify', base)
+    api.search = new URLSearchParams({
+      url: spotifyUrl,
+      key: 'IUHp9S4ExrywBB35'
     })
 
-    let r = await fetch(u)
-    let json = await r.json()
+    const dlRes = await fetch(api)
+    const json = await dlRes.json()
 
-    if (!json?.status || !json?.result?.url_download)
-      throw `No pude generar la descarga.`
+    if (!json?.status || !json?.result?.url_download) {
+      console.log("RESPUESTA API:", json)
+      return conn.reply(m.chat, `❌ No se pudo generar la descarga.\nInténtalo más tarde.`, m)
+    }
 
-    let dlUrl = json.result.url_download
+    const downloadUrl = json.result.url_download
 
-    let audio = await fetch(dlUrl)
-    let buffer = await audio.buffer()
+    const mp3 = await fetch(downloadUrl)
+    const buffer = await mp3.buffer()
 
-    await conn.sendMessage(
-      m.chat,
-      {
-        audio: buffer,
-        mimetype: "audio/mpeg",
-        fileName: `${title}.mp3`,
-        contextInfo: {
-          externalAdReply: {
-            title: title,
-            body: `${artist} • ${duration}`,
-            thumbnailUrl: image,
-            renderLargerThumbnail: true,
-            sourceUrl: url
-          }
-        }
-      },
-      { quoted: m }
-    )
+
+    await conn.sendMessage(m.chat, {
+      audio: buffer,
+      mimetype: "audio/mpeg",
+      fileName: `${title}.mp3`,
+      ptt: false
+    }, { quoted: m })
 
   } catch (e) {
     console.log("ERROR SPOTIFY:", e)
-    conn.reply(m.chat, `❌ *Error al buscar o descargar la canción.*`, m)
+    await conn.reply(m.chat, `❌ Error al buscar o descargar la canción.`, m)
   }
 }
 
