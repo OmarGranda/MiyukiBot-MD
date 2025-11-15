@@ -194,7 +194,7 @@ npm start
 ### DUEÑO Y EDITOR DEL BOT 👑
 [![Omar Granda](https://avatars.githubusercontent.com/u/230871778?v=4)]()
 
-> Copyright (c) 2025 **[OmarGranda](https://github.com/OmarGranda/SakuraBot-MD/blob/main/LICENSE)**
+> Copyright (c) 2025 **[OmarGranda](https://github.com/OmarGranda/MiyukiBot-MD/blob/main/LICENSE)**
 
 ### COLABORADOR 🤝
 
