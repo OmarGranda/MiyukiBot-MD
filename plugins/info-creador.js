@@ -1,4 +1,3 @@
-import { proto } from '@whiskeysockets/baileys'
 import PhoneNumber from 'awesome-phonenumber'
 
 const name = "OmarGranda"
