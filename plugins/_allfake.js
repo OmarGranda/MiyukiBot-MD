@@ -47,27 +47,20 @@ handler.all = async function (m) {
     // ⭐ Metadatos estilo la imagen enviada
     // ============================
     global.packsticker = 
-`┃🌸 *MiyukiBot-MD*
-↳ https://whatsapp.com/channel/0029Vb6wMPa8kyyTpjBG9C2H
+`┃ MiyukiBot-MD 🌸
+↳ https://github.com/MiyukiBot-MD
 
-┃📚 *Información:*
+┃🧑‍💻 Info:
 ↳ https://github.com/OmarGranda/MiyukiBot-MD
-   👑 *Dev:* OmarGranda
+   👑 Dev: OmarGranda
 
 ┃👑 *Usuario:*
 ↳ ${nombre}
 
 ┃📅 *Fecha:* ${fecha}
 ┃🕒 *Hora:* ${tiempo}
-`
-
-    global.packsticker2 =
-`┃🌐 *Red aleatoria:*
-↳ ${redes}
-
-┃✨ Gracias por usar *${botname}* 🌸`
-
-    global.fkontak = {
+0q`
+Ñ1    global.fkontak = {
         key: {
             participants: "0@s.whatsapp.net",
             remoteJid: "status@broadcast",
