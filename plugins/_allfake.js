@@ -64,7 +64,6 @@ handler.all = async function (m) {
 `°.⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸⎯ܴ⎯̶᳞͇ࠝ⎯⃘̶⎯̸.°
 👤 Usuario: ${nombre}
 👑 Bot: ${botname}
-🧑‍💻 Creador: ${creador}
 📆 Fecha: ${fecha}
 🕒 Hora: ${moment.tz('America/Caracas').format('HH:mm:ss')}`
 
