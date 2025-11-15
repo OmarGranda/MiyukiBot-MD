@@ -101,6 +101,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.help = ['music <url|nombre>']
 handler.tags = ['dl']
-handler.command = ['music', 'spotify', 'splay']
+handler.command = ['music']
 
 export default handler
