@@ -11,12 +11,13 @@ const url = `https://some-random-api.com/pokemon/pokedex?pokemon=${encodeURIComp
 const response = await fetch(url)
 const json = await response.json()
 
+// Validación
 if (!response.ok || !json?.name) {
     await m.react('✖️')
-    return conn.reply(m.chat, `⚠️ No se encontró ese Pokémon, intenta con otro nombre.`, m)
+    return conn.reply(m.chat, `⚠️ No se encontró ese Pokémon. Intenta con otro nombre.`, m)
 }
 
-// Procesar datos
+// Procesar campos
 let tipos = json.type || "Desconocido"
 let habilidades = json.abilities || "Desconocidas"
 let genero = json.gender || "—"
@@ -24,15 +25,11 @@ let categoria = json.category || "—"
 let descripcion = json.description || "Sin descripción disponible."
 
 let stats = json.stats || {
-    hp: "—",
-    attack: "—",
-    defense: "—",
-    sp_atk: "—",
-    sp_def: "—",
-    speed: "—"
+    hp: "—", attack: "—", defense: "—",
+    sp_atk: "—", sp_def: "—", speed: "—"
 }
 
-// Calcular debilidades (basado en tipos)
+// Cálculo de debilidades según el tipo
 const typeWeakness = {
     Fire: ["Water", "Ground", "Rock"],
     Water: ["Electric", "Grass"],
@@ -59,7 +56,7 @@ tipos.split(",").map(t => t.trim()).forEach(t => {
 })
 debilidades = [...new Set(debilidades)].join(", ") || "—"
 
-// Nuevo diseño
+// 🔥 NUEVO DISEÑO
 let pokedex = `
 ╭━━━〔 *📘 P O K É D E X* 〕━━━╮
 
@@ -94,11 +91,20 @@ https://www.pokemon.com/es/pokedex/${json.name.toLowerCase()}
 ╰━━━━━━━━━━━━━━━━━━━━━━╯
 `
 
-// **Imagen corregida**
-let imagen = json.sprite || null
+// 🔥 IMAGEN — Corrección final
+let imagenPokemon =
+    json.sprites?.animated ||
+    json.sprites?.normal ||
+    null
 
-if (imagen) {
-    await conn.sendFile(m.chat, imagen, `${json.name}.jpg`, pokedex, m)
+if (imagenPokemon) {
+    await conn.sendFile(
+        m.chat,
+        imagenPokemon,
+        `${json.name}.png`,
+        pokedex,
+        m
+    )
 } else {
     await conn.reply(m.chat, pokedex, m)
 }
@@ -107,7 +113,7 @@ await m.react('✔️')
 
 } catch (error) {
 await m.react('✖️')
-await conn.reply(m.chat, `⚠︎ Ocurrió un error.\n\n${error.message}`, m)
+await conn.reply(m.chat, `⚠︎ Se produjo un error.\n\n${error.message}`, m)
 }}
 
 handler.help = ['pokedex']
