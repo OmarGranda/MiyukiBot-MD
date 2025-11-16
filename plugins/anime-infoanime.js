@@ -1,7 +1,8 @@
+
 import fetch from 'node-fetch'
 
 var handler = async (m, { conn, usedPrefix, command, text }) => {
-if (!text) return conn.reply(m.chat, `❀ Por favor, ingrese el nombre de algún manga o anime.`, m)
+if (!text) return conn.reply(m.chat, `❀ Por favor, ingrese el nombre de algún manga.`, m)
 
 try {
 await m.react('⏰')
@@ -9,7 +10,7 @@ await m.react('⏰')
 let res = await fetch('https://api.jikan.moe/v4/manga?q=' + text)
 if (!res.ok) {
     await m.react('❌')
-    return conn.reply(m.chat, `⚠️ Ocurrió un fallo al buscar.`, m)
+    return conn.reply(m.chat, `⚠️ Ocurrió un fallo.`, m)
 }
 
 let json = await res.json()
@@ -20,9 +21,10 @@ if (!json.data || json.data.length === 0) {
 
 let manga = json.data[0]
 
+// Datos seguros con fallback
 let {
     chapters,
-    title,
+    title_japanese,
     url,
     type,
     score,
@@ -36,39 +38,11 @@ let {
 
 let author = manga.authors?.[0]?.name || "Desconocido"
 
-
-// 🔰 FUNCION PARA TRADUCIR TEXTO A ESPAÑOL
-async function traducir(texto) {
-    if (!texto) return "No disponible."
-    try {
-        let r = await fetch("https://libretranslate.de/translate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                q: texto,
-                source: "en",
-                target: "es",
-                format: "text"
-            })
-        })
-        let data = await r.json()
-        return data.translatedText || texto
-    } catch {
-        return texto // Si falla la API, deja el texto original
-    }
-}
-
-// 🟣 Traducción automática
-let synopsisES = await traducir(synopsis)
-let backgroundES = await traducir(background)
-let titleES = await traducir(title)
-
-
-// Nuevo diseño bonito en español
+// Nuevo diseño
 let animeingfo = `
-╭━━━〔 *📘 INFO DEL MANGA/ANIME* 〕━━━╮
+╭━━━〔 *📘 INFO DEL MANGA* 〕━━━╮
 
-💮 *Título:* ${titleES}
+💮 *Título:* ${title_japanese || 'No disponible'}
 📚 *Capítulos:* ${chapters || '—'}
 📘 *Volúmenes:* ${volumes || '—'}
 📝 *Autor:* ${author}
@@ -80,22 +54,20 @@ let animeingfo = `
 👥 *Miembros:* ${members || '—'}
 💗 *Favoritos:* ${favorites || '—'}
 
-🖼️ *Información adicional:* 
-${backgroundES}
+🖼️ *Fondo:* ${background || 'Sin información'}
 
 🧾 *Sinopsis:* 
-${synopsisES}
+${synopsis || 'Sin sinopsis disponible'}
 
 🔗 *URL:* ${url}
 
 ╰━━━━━━━━━━━━━━━━━━━━━━╯`
 
-
 await conn.sendFile(
     m.chat,
     manga.images.jpg.image_url,
     'manga.jpg',
-    '✧ *I N F O - M A N G A / A N I M E* ✧\n\n' + animeingfo,
+    '✧ *I N F O - M A N G A* ✧\n\n' + animeingfo,
     m
 )
 
@@ -105,14 +77,14 @@ await m.react('✅')
 await m.react('❌')
 await conn.reply(
     m.chat,
-    `⚠️ Se produjo un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`,
+    `⚠️ Se ha producido un problema.\n> Usa *${usedPrefix}report* para informarlo.\n\n${error.message}`,
     m
 )
 }}
 
-handler.help = ['infoanime', 'infomanga']
+handler.help = ['infomanga']
 handler.tags = ['anime']
-handler.command = ['infoanime', 'infomanga']
+handler.command = ['infomanga', 'infoanime']
 handler.group = true
 
 export default handler
