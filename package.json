@@ -15,14 +15,13 @@
 "type": "git",
 "url": "git+https://github.com/OmarGranda/MiyukiBot-MD.git"
 },  
-"author": "OmarGranda",
+"author": "xd",
 "license": "MIT-License",
 "bugs": {
 "url": "https://github.com/OmarGranda/MiyukiBot-MD/issues"
 },
-"homepage": "https://github.com/OmarGranda/MiyukiBot-MD#readme", 
+"homepage": "https://github.com/OmarGranda/MiyukiBot-MD#readme",
 "dependencies": {
-"@bochilteam/scraper": "^4.2.4",
 "@hapi/boom": "^10.0.1",
 "@vitalets/google-translate-api": "^8.0.0",
 "@whiskeysockets/baileys": "npm:wileys",
@@ -30,7 +29,6 @@
 "aptoide-scraper": "github:DIEGO-OFC/dv-aptoide-scraper",
 "awesome-phonenumber": "^3.4.0",
 "axios": "^1.1.2",
-"boxen": "^7.1.1",
 "cfonts": "^3.3.0",
 "chalk": "^5.1.0",
 "cheerio": "npm:cheerio@1.0.0-rc.12",
@@ -40,20 +38,17 @@
 "formdata-node": "^5.0.0",
 "google-libphonenumber": "3.2.38",
 "human-readable": "^0.2.1",
-"jimp": "^0.16.1",
-"jsdom": "^20.0.1",
+"jimp": "^0.16.3",
 "lodash": "^4.17.21",
 "lowdb": "^3.0.0",
 "megajs": "^1.1.3",
 "mime-types": "^3.0.1",
-"mongoose": "^6.6.5",
 "node-cache": "^5.1.2",
 "node-fetch": "^3.2.10",
 "node-webpmux": "^3.1.3",
 "performance-now": "^2.1.0",
 "pino": "^8.6.1",
 "qrcode": "^1.5.1",
-"ruhend-scraper": "^7.0.4",
 "syntax-error": "^1.4.0",
 "terminal-image": "^2.0.0",
 "url-regex-safe": "^3.0.0",
@@ -66,5 +61,5 @@
 "wa-sticker-formatter": "^4.3.2"
 },
 "engines": {
-"node": ">=22.0.0"
+"node": ">=20.0.0"
 }}
