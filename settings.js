@@ -15,12 +15,8 @@ global.owner = [
 // <-- Número @s.whatsapp.net -->
 ["51908027316", "🜲 Propietario", true],
 ["51908027316"],
-['51919199620'],
-
-// <-- Número @lid -->
-["235510823915591", "OmarGranda", true],
-["94846450692324", "Omar_xyz", true]
-]
+['51919199620']
+],
 
 global.mods = ["51908027316"]
 global.suittag = ["51908027316"] 
