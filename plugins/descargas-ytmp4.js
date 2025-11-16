@@ -17,7 +17,6 @@ const handler = async (m, { conn, text }) => {
 
     const { title, duration, download_url } = json.result
 
-    // Obtener tamaño del archivo
     const head = await fetch(download_url, { method: "HEAD" })
     const fileSize = head.headers.get("content-length")
     const fileMB = fileSize ? (Number(fileSize) / 1024 / 1024).toFixed(2) : 0
@@ -55,7 +54,7 @@ const handler = async (m, { conn, text }) => {
     console.error(e)
     conn.reply(
       m.chat,
-      `❌ *Ocurrió un error al procesar el video.*\nVerifica el enlace o inténtalo más tarde.`,
+      `🌿 *Ocurrió un error al procesar el video.*\nVerifica el enlace o inténtalo más tarde.`,
       m
     )
   }
