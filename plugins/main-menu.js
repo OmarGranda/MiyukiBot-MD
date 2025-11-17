@@ -391,7 +391,7 @@ await conn.sendMessage(
         body: dev,
         thumbnailUrl: randomIcono,
         mediaType: 1,
-        renderLargerThumbnail: false
+        renderLargerThumbnail: true
       }
     }
   },
