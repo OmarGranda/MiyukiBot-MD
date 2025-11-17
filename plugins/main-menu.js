@@ -375,7 +375,7 @@ await conn.sendMessage(
   {
     video: { url: 'https://qu.ax/AjjHr.mp4' },
     caption: menu,
-    gifPlayback: true,
+    gifPlayback: false,
     gifAttribution: 0,
     contextInfo: {
       mentionedJid: [m.sender],
