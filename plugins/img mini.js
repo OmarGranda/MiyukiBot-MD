@@ -1,46 +1,8 @@
 import fetch from "node-fetch"
 import Jimp from "jimp"
 import crypto from "crypto"
-import { generateWAMessageFromContent } from "@whiskeysockets/baileys"
-
-async function sendOrderMsg(m, conn, texto, imgBuffer) {
-  try {
-    const order = {
-      orderId: 'MINI-' + Date.now(),
-      thumbnail: imgBuffer,
-      itemCount: 1,
-      status: 1,
-      surface: 1,
-      message: texto,
-      orderTitle: 'Miniatura Generada',
-      token: null,
-      sellerJid: null,
-      totalAmount1000: '0',
-      totalCurrencyCode: 'PEN',
-      contextInfo: {
-        externalAdReply: {
-          title: botname,
-          body: '',
-          thumbnail: imgBuffer,
-          mediaType: 1,
-          renderLargerThumbnail: true
-        }
-      }
-    }
-
-    const msg = generateWAMessageFromContent(
-      m.chat,
-      { orderMessage: order },
-      { quoted: m }
-    )
-
-    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
-
-  } catch (e) {
-    console.log(e)
-    m.reply("❌ Error enviando el mensaje.")
-  }
-}
+import { FormData, Blob } from "formdata-node"
+import { fileTypeFromBuffer } from "file-type"
 
 let handler = async (m, { conn, text }) => {
   const rwait = "🕓"
@@ -76,32 +38,58 @@ let handler = async (m, { conn, text }) => {
       quality -= 10
     } while (outBuffer.length > 64 * 1024 && quality > 10)
 
+    const catboxURL = await subirCatbox(outBuffer)
+
     const { bitmap } = resized
-    const format = "JPG"
+    const format = Jimp.MIME_JPEG.split("/")[1]
     const sizeKB = (outBuffer.length / 1024).toFixed(1)
 
-    const caption = `
-🌸 *M I N I A T U R A  G E N E R A D A* 🌸
+    const caption = `🌸 *M I N I A T U R A  G E N E R A D A* 🌸
 
-🖼️ *Formato:* ${format}
+🖼️ *Formato:* ${format.toUpperCase()}
+
 📏 *Resolución:* ${bitmap.width}x${bitmap.height}px
+
 📦 *Tamaño:* ${sizeKB} KB
+
 💎 *Calidad final:* ${Math.min(quality + 10, 100)}%
+
+🌐 *Catbox:* ${catboxURL.trim()}
+
 `
 
-    const pp = banner
-    const pbf = await fetch(pp).then(r => r.buffer())
-
-    await sendOrderMsg(m, conn, caption, pbf)
-
+    await conn.sendMessage(m.chat, { image: outBuffer, caption }, { quoted: m })
     await m.react(done)
 
   } catch (e) {
     console.error("[Error en .mini]", e)
     await m.react(error)
-    await m.reply("❌ *Ocurrió un error al procesar la imagen.*")
+    await m.reply("❌ *Ocurrió un error al procesar la imagen.*\nVerifica que el enlace o archivo sea válido.")
   }
 }
 
 handler.command = ["mini", "miniatura"]
 export default handler
+
+
+async function subirCatbox(content) {
+  const { ext, mime } = (await fileTypeFromBuffer(content)) || { ext: "jpg", mime: "image/jpeg" }
+  const blob = new Blob([content], { type: mime })
+  const formData = new FormData()
+  const randomName = crypto.randomBytes(6).toString("hex")
+
+  formData.append("reqtype", "fileupload")
+  formData.append("fileToUpload", blob, `${randomName}.${ext}`)
+
+  const res = await fetch("https://catbox.moe/user/api.php", {
+    method: "POST",
+    body: formData,
+    headers: {
+      "User-Agent": "RinBot/1.0 (Linux; Android 11)"
+    },
+  })
+
+  if (!res.ok) throw new Error("Error al subir la imagen a Catbox.")
+  const text = await res.text()
+  return text.trim()
+}
