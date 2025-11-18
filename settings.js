@@ -15,7 +15,7 @@ global.owner = [
 // <-- Número @s.whatsapp.net -->
 ["51908027316", "🜲 Propietario", true],
 ["51908027316"],
-['51919199620']
+["51919199620", "shadow", true]
 ],
 
 global.mods = ["51908027316"]
