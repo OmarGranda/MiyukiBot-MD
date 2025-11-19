@@ -30,27 +30,28 @@ let handler = async (m, { conn }) => {
     let hora = moment.tz('America/Lima').format('HH:mm:ss')
     let dia = moment.tz('America/Lima').format('dddd')
     let menu = `
-╭─╼「 🌸 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 」
-│ 👤 Usuario: *@${mentionedJid.split('@')[0]}*
-│ 💼 Comandos disponibles: *${totalCommands}*
-│ ⚙️ Versión: *${vs}*
-│ 💠 Librería: *${libreria}*
+╭───── 🎄✨『 𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 』✨🎄 ─────╮
+│ 🧑‍🎄 Usuario: *@${mentionedJid.split('@')[0]}*
+│ 🎁 Comandos: *${totalCommands}*
+│ 🌟 Versión: *${vs}*
+│ 🎄 Librería: *${libreria}*
 │ 🤖 Modo: *${(conn.user.jid == global.conn.user.jid ? 'Principal' : 'Sub-Bot')}*
-│ ⏳ Uptime: *${uptime}*
-╰───────────────────────╯
+│ ⛄ Uptime: *${uptime}*
+╰────────────────────────────────╯
 
-╭─╼「 💾 ESTADO DEL SISTEMA 」
-│ 💻 RAM Total: *${total} MB*
-│ 📈 RAM En uso: *${used} MB*
-│ 📉 RAM Libre: *${free} MB*
-│ ⚡ Ping actual: *${ping} ms*
-╰───────────────────────╯
+╭── ❄️💾 « ESTADO DEL SISTEMA » 💾❄️ ──╮
+│ 🎄 RAM Total: *${total} MB*
+│ 🔔 RAM En uso: *${used} MB*
+│ 🎁 RAM Libre: *${free} MB*
+│ ✨ Ping actual: *${ping} ms*
+╰────────────────────────────────╯
 
-╭─╼「 🕓 FECHA Y HORA 」
+╭──── 🎅🕓 « FECHA Y HORA » 🕓🎅 ────╮
 │ 📅 Día: *${dia}*
-│ 🗓️ Fecha: *${fecha}*
+│ ❄️ Fecha: *${fecha}*
 │ ⏰ Hora actual: *${hora}*
-╰───────────────────────╯
+╰───────────────────────────────╯
+
 
 ╭─━━━💰 𝐌𝐄𝐍𝐔 𝐄𝐂𝐎𝐍𝐎𝐌𝐈́𝐀 💰
 │✨ Comandos para ganar y administrar tu dinero
