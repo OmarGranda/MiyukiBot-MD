@@ -348,9 +348,7 @@ let handler = async (m, { conn }) => {
 
  await conn.sendMessage(m.chat, {
       video: { url: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763661063250_519643.mp4' },
-      gifPlayback: true,
       caption: menu,
-      ...fake
   }, { quoted: m })
 
 
