@@ -9,9 +9,7 @@ let handler = async (m, { conn }) => {
 
     let mentionedJid = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.sender
     let totalCommands = Object.keys(global.plugins).length
-    const iconos = [
-      'https://qu.ax/TPfmC.jpg'
-    ]
+   
     const randomIcono = iconos[Math.floor(Math.random() * iconos.length)]
 
     let timestamp = speed()
@@ -350,6 +348,7 @@ let handler = async (m, { conn }) => {
 
  await conn.sendMessage(m.chat, {
       video: { url: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763661063250_519643.mp4' },
+      gifPlayback: true,
       caption: menu,
       ...fake
   }, { quoted: m })
