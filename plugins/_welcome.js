@@ -1,39 +1,41 @@
-import { WAMessageStubType } from '@whiskeysockets/baileys'
+ import { WAMessageStubType } from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
 export async function before(m, { conn, participants, groupMetadata }) {
   try {
+    // sólo grupos
     if (!m.isGroup) return true
+
+    // si no hay stub type, no nos interesa
     if (!m.messageStubType) return true
 
+    // DEBUG: para ver qué stub llegó (quita o comenta en producción)
+    console.log('[before hook] messageStubType:', m.messageStubType)
+    console.log('[before hook] messageStubParameters:', m.messageStubParameters)
+
     const chat = global.db?.data?.chats?.[m.chat] || {}
-    const usuarioJid =
-      m.messageStubParameters?.[0] ||
-      m.key?.participant ||
-      m.participant ||
-      m.sender
 
-    if (!usuarioJid) return true
+    // parámetros del stub (puede venir varios cuando entran/ salen varios)
+    const params = Array.isArray(m.messageStubParameters) ? m.messageStubParameters : []
 
-    const numeroUsuario = usuarioJid.split('@')[0]
-
-    let nombre = numeroUsuario
-    try {
-      const n = await conn.getName(usuarioJid)
-      if (n) nombre = n
-    } catch { }
-
-    let ppUrl = ''
-    try {
-      ppUrl = await conn.profilePictureUrl(usuarioJid, 'image')
-    } catch {
-      ppUrl = 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg'
+    // Si no hay parámetros intentamos otros campos (fallback)
+    if (params.length === 0) {
+      const fallback = m.key?.participant || m.participant || m.sender
+      if (fallback) params.push(fallback)
     }
 
-    const thumbBuffer = await fetch('https://files.catbox.moe/crdknj.jpg')
-      .then(r => r.buffer())
-      .catch(() => Buffer.alloc(0))
+    if (params.length === 0) return true // nada que hacer
 
+    // precarga de thumbnail (seguro)
+    let thumbBuffer = Buffer.alloc(0)
+    try {
+      thumbBuffer = await fetch('https://files.catbox.moe/crdknj.jpg')
+        .then(r => r.buffer())
+    } catch (e) {
+      thumbBuffer = Buffer.alloc(0)
+    }
+
+    // contacto citado (fake contact) usado en quoted
     const fkontak = {
       key: {
         fromMe: false,
@@ -53,6 +55,7 @@ END:VCARD`
       }
     }
 
+    // fecha/hora en zona America/Lima
     const fechaObj = new Date()
     const hora = fechaObj.toLocaleTimeString('es-PE', { timeZone: 'America/Lima' })
     const fecha = fechaObj.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Lima' })
@@ -60,13 +63,14 @@ END:VCARD`
 
     const groupSize = participants?.length || 0
 
-    const welcomeMessage = `
+    // mensajes (plantillas)
+    const makeWelcome = (numeroUsuario) => `
 ╔═══════❀༺🌸༻❀═══════╗
             *ＢＩＥＮＶＥＮＩＤＯ／Ａ*
 ╚═══════❀༺🌸༻❀═══════╝
 
 ✨ *Usuario:* @${numeroUsuario}
-🎉 *Grupo:* ${groupMetadata?.subject}
+🎉 *Grupo:* ${groupMetadata?.subject || ''}
 👥 *Miembros:* ${groupSize}
 
 📅 *Fecha:* ${dia}, ${fecha}
@@ -76,13 +80,13 @@ END:VCARD`
 > 🌸 MiyukiBot-MD | By OmarGranda
 `
 
-    const byeMessage = `
+    const makeBye = (numeroUsuario) => `
 ╔═══════❀༺🍁༻❀═══════╗
                         *ＡＤＩＯＳ*
 ╚═══════❀༺🍁༻❀═══════╝
 
 👋 *Usuario:* @${numeroUsuario}
-🌷 *Grupo:* ${groupMetadata?.subject}
+🌷 *Grupo:* ${groupMetadata?.subject || ''}
 👥 *Miembros:* ${groupSize}
 
 📅 *Fecha:* ${dia}, ${fecha}
@@ -92,9 +96,9 @@ END:VCARD`
 > 🌸 MiyukiBot-MD | By OmarGranda
 `
 
+    // contexto "falso" para reply enriquecido
     const fakeContext = {
       contextInfo: {
-        mentionedJid: [usuarioJid],
         externalAdReply: {
           title: "MiyukiBot-MD 🌸",
           body: "Bienvenid@ a la mejor experiencia ✨",
@@ -106,28 +110,68 @@ END:VCARD`
       }
     }
 
-    if (chat.welcome && m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
-      await conn.sendMessage(m.chat, {
-        image: { url: ppUrl },
-        caption: welcomeMessage,
-        mentions: [usuarioJid],
-        ...fakeContext
-      }, { quoted: fkontak })
+    // función para obtener nombre y foto de perfil segura
+    async function getUserData(jid) {
+      let nombre = jid.split('@')[0]
+      try {
+        const n = await conn.getName(jid)
+        if (n) nombre = n
+      } catch (e) {
+        // ignore
+      }
+
+      let ppUrl = ''
+      try {
+        ppUrl = await conn.profilePictureUrl(jid, 'image')
+      } catch (e) {
+        ppUrl = 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745522645448.jpeg'
+      }
+
+      return { nombre, ppUrl }
     }
 
-    if (
-      chat.welcome &&
-      (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
-       m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE)
-    ) {
-      await conn.sendMessage(m.chat, {
-        image: { url: ppUrl },
-        caption: byeMessage,
-        mentions: [usuarioJid],
-        ...fakeContext
-      }, { quoted: fkontak })
+    // Comprueba y envía para cada parámetro -> puede haber varios participantes
+    for (const parametro of params) {
+      // algunos parámetros pueden venir como "1234567890" o "1234567890@s.whatsapp.net"
+      const usuarioJid = parametro.includes('@') ? parametro : `${parametro}@s.whatsapp.net`
+      if (!usuarioJid || usuarioJid === 'status@broadcast') continue
+
+      const numeroUsuario = usuarioJid.split('@')[0]
+      const { nombre, ppUrl } = await getUserData(usuarioJid)
+
+      // Welcome: varios tipos de stub pueden indicar adición
+      if (chat.welcome && m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_ADD) {
+        const welcomeMessage = makeWelcome(numeroUsuario)
+        try {
+          await conn.sendMessage(m.chat, {
+            image: { url: ppUrl },
+            caption: welcomeMessage,
+            mentions: [usuarioJid],
+            ...fakeContext
+          }, { quoted: fkontak })
+        } catch (err) {
+          console.error('[before hook] error sending welcome:', err)
+        }
+      }
+
+      // Leave / Remove
+      if (chat.welcome && (m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_LEAVE ||
+          m.messageStubType === WAMessageStubType.GROUP_PARTICIPANT_REMOVE)) {
+        const byeMessage = makeBye(numeroUsuario)
+        try {
+          await conn.sendMessage(m.chat, {
+            image: { url: ppUrl },
+            caption: byeMessage,
+            mentions: [usuarioJid],
+            ...fakeContext
+          }, { quoted: fkontak })
+        } catch (err) {
+          console.error('[before hook] error sending bye:', err)
+        }
+      }
     }
 
+    return true
   } catch (err) {
     console.error('[before hook error]:', err)
     return true
