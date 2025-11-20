@@ -347,57 +347,13 @@ let handler = async (m, { conn }) => {
 ╰───────────────────────╯
 👑 © Powered By *OmarGranda*`
 
-/*    await conn.sendMessage(m.chat, {
-      video: { url: 'https://qu.ax/AjjHr.mp4' },
-      caption: menu,
-      contextInfo: {
-        mentionedJid: [mentionedJid],
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: channelRD.id,
-          serverMessageId: '',
-          newsletterName: channelRD.name
-        },
-        externalAdReply: {
-          title: botname,
-          body: textbot,
-          mediaType: 1,
-          mediaUrl: redes,
-          sourceUrl: redes,
-          thumbnailUrl: randomIcono,
-          showAdAttribution: false,
-          renderLargerThumbnail: true
-        }
-      }
-    }, { quoted: m })*/
 
-await conn.sendMessage(
-  m.chat,
-  {
-    video: { url: 'https://qu.ax/AjjHr.mp4' },
-    caption: menu,
-    gifPlayback: true,
-    gifAttribution: 0,
-    contextInfo: {
-      mentionedJid: [m.sender],
-      isForwarded: true,
-      forwardingScore: 999,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: channelRD.id,
-        serverMessageId: 100,
-        newsletterName: channelRD.name
-      },
-      externalAdReply: {
-        title: botname,
-        body: dev,
-        thumbnailUrl: randomIcono,
-        mediaType: 1,
-        renderLargerThumbnail: true
-      }
-    }
-  },
-  { quoted: m }
-)
+ await conn.sendMessage(m.chat, {
+      video: { url: 'https://raw.githubusercontent.com/AkiraDevX/uploads/main/uploads/1763661063250_519643.mp4' },
+      caption: menu,
+      ...fake
+  }, { quoted: m })
+
 
   } catch (e) {
     console.error(e)
