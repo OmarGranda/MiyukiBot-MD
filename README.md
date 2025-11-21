@@ -108,7 +108,7 @@ pkg install git nodejs ffmpeg imagemagick yarn -y
 ```
 
 ```bash
-git clone https://github.com/OmarGranda/MiyukiBot-MD && cd SakuraBot-MD
+git clone https://github.com/OmarGranda/MiyukiBot-MD && CD MiyukiBot-MD
 ```
 
 ```bash
