@@ -5,7 +5,7 @@ import fetch from 'node-fetch'
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 const fetchSticker = async (text, attempt = 1) => {
 try {
-const response = await axios.get(`${global.APIs.zenzxz.url}/maker/brat`, { params: { text }, responseType: 'arraybuffer' })
+const response = await axios.get(`https://skyzxu-brat.hf.space/brat`, { params: { text }, responseType: 'arraybuffer' })
 return response.data
 } catch (error) {
 if (error.response?.status === 429 && attempt <= 3) {
@@ -16,7 +16,7 @@ return fetchSticker(text, attempt + 1)
 throw error
 }}
 const fetchStickerVideo = async (text) => {
-const response = await axios.get(`${global.APIs.zenzxz.url}/maker/bratvid`, { params: { text }, responseType: 'arraybuffer' })
+const response = await axios.get(`https://skyzxu-brat.hf.space/brat-animated`, { params: { text }, responseType: 'arraybuffer' })
 if (!response.data) throw new Error('Error al obtener el video de la API.')
 return response.data
 }
