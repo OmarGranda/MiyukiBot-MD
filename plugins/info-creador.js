@@ -2,7 +2,7 @@ import PhoneNumber from 'awesome-phonenumber'
 
 const name = "OmarGranda"
 const empresa = "𝙈𝙞𝙮𝙪𝙠𝙞𝘽𝙤𝙩-𝙈𝘿 ⚡"
-const numCreador = "51927303598"
+const numCreador = "51908027316"
 const correo = "omargranda673@gmail.com"
 const web = "https://github.com/OmarGranda"
 const about = "Hakuna matata: vive y sé feliz 🙂"
