@@ -17,15 +17,16 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     let video = search.videos[0]
     if (!video) return conn.reply(m.chat, '☁️ No se encontró ningún resultado.', m)
 
-    const apiUrl = `https://api.zenzxz.my.id/api/downloader/ytmp3v2?url=${encodeURIComponent(video.url)}`
+    const apiUrl = `https://api-adonix.ultraplus.click/download/ytaudio?apikey=the.shadow&url=${encodeURIComponent(video.url)}`
     const res = await fetch(apiUrl)
-    const data = await res.json()
+    const json = await res.json()
 
-    if (!data.success || !data.data?.download_url)
-      return conn.reply(m.chat, '❌ Error al obtener el audio desde la API.', m)
+    if (json.status !== "true" || !json.data?.url)
+      return conn.reply(m.chat, '❌ Error al obtener el audio desde la nueva API.', m)
 
-    const info = data.data
-    const size = await getSize(info.download_url)
+    const info = json.data
+
+    const size = await getSize(info.url)
     const sizeStr = size ? formatSize(size) : 'Desconocido'
 
     const caption = `🎶 *ＹＯＵＴＵＢＥ • ＭＰ3* ☁️
@@ -34,17 +35,17 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 > ⏰ *𝐃𝐔𝐑𝐀𝐂𝐈𝐎𝐍:* ${video.timestamp}
 > 🎬 *𝐂𝐀𝐍𝐀𝐋:* ${video.author.name}
 > 👀 *𝐕𝐈𝐒𝐓𝐀𝐒:* ${video.views.toLocaleString('es-PE')}
-> 💾 *𝐓𝐀𝐌𝐀𝐍̃𝐎:* ${sizeStr}
-> 🤩 *𝐂𝐀𝐋𝐈𝐃𝐀𝐃:* 128kbps
+> 💾 *𝐓𝐀𝐌𝐀Ñ𝐎:* ${sizeStr}
+> 🤩 *𝐂𝐀𝐋𝐈𝐃𝐀𝐃:* ${info.quality}
 > 🗓️ *𝐏𝐔𝐁𝐋𝐈𝐂𝐀𝐃𝐎:* ${video.ago}
 > 🔗 *𝐋𝐈𝐍𝐊:* ${video.url}
 ────────────────────`
 
-    const thumb = (await conn.getFile(video.thumbnail)).data
+    const thumb = (await conn.getFile(info.thumbnail || video.thumbnail)).data
 
     await conn.sendMessage(m.chat, { image: thumb, caption }, { quoted: m })
 
-    const audioBuffer = await (await fetch(info.download_url)).buffer()
+    const audioBuffer = await (await fetch(info.url)).buffer()
     await conn.sendMessage(m.chat, {
       audio: audioBuffer,
       fileName: `${info.title}.mp3`,
