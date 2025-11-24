@@ -209,8 +209,8 @@ npm start
 
 <h2>ׅ  ׄ 몽 ۪  <b>Shadow.xyz</b> ꩒ᰫ</h2>
 
-<p><a href="https://github.com/Shadow-nex" target="_blank">
-  🪴  <b>github.com/Shadow-nex</b>
+<p><a href="https://github.com/shadox.xyz" target="_blank">
+  🪴  <b>github.com/shadox.xyz</b>
 </a></p>
 <p>🌿 dev.shadow xD 🦌</p>
 </td>
